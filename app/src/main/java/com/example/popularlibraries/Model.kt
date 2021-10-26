@@ -5,7 +5,7 @@ class Model {
     val counters = mutableListOf (0, 0, 0)
 
     //вернуть текущий элемент списка
-    fun getCurrent(index: Int): Int {
+    private fun getCurrent(index: Int): Int {
 
         return counters[index]
     }

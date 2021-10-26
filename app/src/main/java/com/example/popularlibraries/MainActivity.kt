@@ -10,7 +10,7 @@ class MainActivity : AppCompatActivity(), MainView {
     private var _binding: ActivityMainBinding? = null
     private val binding get() = _binding!!
 
-    val presenter = Presenter(this)
+    private val presenter = Presenter(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,21 +18,20 @@ class MainActivity : AppCompatActivity(), MainView {
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val listener = View.OnClickListener {
-            presenter.counterClick(it.id)
-        }
-        binding.btnCounter1.setOnClickListener(listener)
-        binding.btnCounter2.setOnClickListener(listener)
-        binding.btnCounter3.setOnClickListener(listener)
+        binding.btnCounter1.setOnClickListener { presenter.counter1Click() }
+        binding.btnCounter2.setOnClickListener { presenter.counter2Click() }
+        binding.btnCounter3.setOnClickListener { presenter.counter3Click() }
     }
 
-    //Подсказка к ПЗ: поделить на 3 отдельные функции и избавиться от index
-    override fun setButtonText(index: Int, text: String) {
+    override fun setButton1Text( text: String) {
+        binding.btnCounter1.text = text
+    }
 
-        when (index) {
-            0 -> _binding?.btnCounter1?.text = text
-            1 -> _binding?.btnCounter2?.text = text
-            2 -> _binding?.btnCounter3?.text = text
-        }
+    override fun setButton2Text(text: String) {
+        binding.btnCounter2.text = text
+    }
+
+    override fun setButton3Text(text: String) {
+        binding.btnCounter3.text = text
     }
 }
