@@ -4,13 +4,17 @@ import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.example.popularlibraries.databinding.ActivityMainBinding
+import moxy.MvpAppCompatActivity
+import moxy.ktx.moxyPresenter
 
-class MainActivity : AppCompatActivity(), MainView {
+class MainActivity : MvpAppCompatActivity(), MainView {
 
     private var _binding: ActivityMainBinding? = null
     private val binding get() = _binding!!
 
-    private val presenter = Presenter(this)
+    //объявляем Presenter и делегируем его создание и хранение через делегата moxyPresenter,
+    //которому отдаём функцию, создающую Presenter.
+    private val presenter by moxyPresenter { Presenter(Model()) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
