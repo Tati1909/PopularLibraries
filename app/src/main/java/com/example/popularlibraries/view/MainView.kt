@@ -1,4 +1,4 @@
-package com.example.popularlibraries
+package com.example.popularlibraries.view
 
 import moxy.MvpView
 import moxy.viewstate.strategy.AddToEndSingleStrategy
@@ -15,10 +15,4 @@ import moxy.viewstate.strategy.alias.AddToEndSingle
 //подходит именно эта стратегия.
 
 @StateStrategyType(AddToEndSingleStrategy::class)
-interface MainView : MvpView {
-    @AddToEndSingle
-    fun setButton1Text(text: String)
-    fun setButton2Text(text: String)
-    fun setButton3Text(text: String)
-
-}
+interface MainView : MvpView
