@@ -6,14 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.popularlibraries.databinding.ItemUserBinding
 import com.example.popularlibraries.presenter.IUserListPresenter
 
-//Таким образом, адаптер не имеет ссылок на данные и полностью делегирует процесс наполнения
-//View в Presenter, так как ViewHolder реализует интерфейс UserItemView и передаётся в функцию
-//bindView в качестве этого интерфейса.
-//Для вызова itemClickListener используется функция invoke(), так как он может быть равен null. А
-//также это связано с синтаксическими ограничениями, не позволяющими иначе осуществить вызов
-//nullable-значения функционального типа. Эта функция есть у любого значения функционального типа,
-//и её вызов вызывает саму функцию, которая и считается этим значением. Проще говоря,
-//presenter.itemClickListener?.invoke(holder) вызовет itemClickListener, если он не равен null.
+//Адаптер не имеет ссылок на данные и полностью делегирует процесс наполнения View в Presenter.
 
 class UsersRVAdapter(val presenter: IUserListPresenter) :
     RecyclerView.Adapter<UsersRVAdapter.ViewHolder>() {
@@ -26,6 +19,10 @@ class UsersRVAdapter(val presenter: IUserListPresenter) :
             )
         ).apply {
             itemView.setOnClickListener {
+                ////Для вызова itemClickListener используется функция invoke(), так как он может быть равен null. А
+                ////также это связано с синтаксическими ограничениями, не позволяющими иначе осуществить вызов
+                ////nullable-значения функционального типа. Проще говоря,
+                ////presenter.itemClickListener?.invoke(holder) вызовет itemClickListener, если он не равен null.
                 presenter.itemClickListener?.invoke(this)
             }
         }
@@ -33,13 +30,19 @@ class UsersRVAdapter(val presenter: IUserListPresenter) :
     override fun getItemCount() = presenter.getCount()
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) =
-        presenter.bindView(holder.apply { pos = position })
+        //ViewHolder передаётся в функцию bindView в качестве интерфейса
+        presenter.bindView(holder.apply {
+            pos = position
+        })
 
     inner class ViewHolder(private val binding: ItemUserBinding) :
         RecyclerView.ViewHolder(binding.root), UserItemView {
+        //переменная и метод интерфейсов
         override var pos = -1
+
+        //устанавливаем логин
         override fun setLogin(text: String) = with(binding) {
-            tvLogin.text = text
+            loginTextView.text = text
         }
     }
 }

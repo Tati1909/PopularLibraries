@@ -4,12 +4,12 @@ import com.example.popularlibraries.model.GithubUser
 import com.example.popularlibraries.model.GithubUsersRepo
 import com.example.popularlibraries.view.UserItemView
 import com.example.popularlibraries.view.UsersView
-import com.github.terrakok.cicerone.Router
 import moxy.MvpPresenter
 
 //Необходим для навигации
-class UsersPresenter(val usersRepo: GithubUsersRepo, val router: Router) :
+class UsersPresenter(val usersRepo: GithubUsersRepo) :
     MvpPresenter<UsersView>() {
+
     class UsersListPresenter : IUserListPresenter {
         val users = mutableListOf<GithubUser>()
         override var itemClickListener: ((UserItemView) -> Unit)? = null
@@ -36,7 +36,7 @@ class UsersPresenter(val usersRepo: GithubUsersRepo, val router: Router) :
         usersListPresenter.users.addAll(users)
         viewState.updateList()
     }
-
+/*
     //Для обработки нажатия клавиши «Назад» добавляем функцию backPressed(). Она возвращает
     //Boolean, где мы передаём обработку выхода с экрана роутеру. Вообще, функции Presenter, согласно
     //парадигме, не должны ничего возвращать, но в нашем случае приходится идти на компромисс из-за
@@ -44,5 +44,5 @@ class UsersPresenter(val usersRepo: GithubUsersRepo, val router: Router) :
     fun backPressed(): Boolean {
         router.exit()
         return true
-    }
+    }*/
 }
