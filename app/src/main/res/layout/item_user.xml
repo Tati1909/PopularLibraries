@@ -5,7 +5,8 @@
     android:orientation="horizontal"
     android:foreground="?attr/selectableItemBackground"
     android:gravity="center_vertical">
-    <TextView
+
+<TextView
         android:id="@+id/login_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

@@ -1,11 +1,15 @@
 package com.example.popularlibraries
 
 import android.os.Bundle
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.setupActionBarWithNavController
 import com.example.popularlibraries.databinding.ActivityMainBinding
+import com.example.popularlibraries.presenter.MainPresenter
+import com.example.popularlibraries.view.AndroidScreens
+import com.example.popularlibraries.view.BackButtonListener
+import com.example.popularlibraries.view.MainView
+import com.example.popularlibraries.view.UsersRVAdapter
+import com.github.terrakok.cicerone.androidx.AppNavigator
 import moxy.MvpAppCompatActivity
+import moxy.ktx.moxyPresenter
 
 //Класс SupportAppNavigator — часть Cicerone. Именно внутри него происходит вся работа с
 //FragmentManager в зависимости от отправляемых нами навигационных команд.
@@ -26,12 +30,18 @@ import moxy.MvpAppCompatActivity
 //Если оттуда возвращается true, значит, событие поглощено, и никаких действий предпринимать не
 //требуется. А если наоборот — сообщаем презентеру о необходимости обработки нажатия. Остальное
 //— организация работы Cicerone, подробнее о которой — в теоретической части.
-class MainActivity : MvpAppCompatActivity() {
+class MainActivity : MvpAppCompatActivity(), MainView {
 
-    private lateinit var navController: NavController
+    val navigator = AppNavigator(this, R.id.container)
 
-    //val navigator = AppNavigator(this, R.id.container)
-    //private val presenter by moxyPresenter { UsersPresenter(GithubUsersRepo()) }
+    private val presenter by moxyPresenter {
+        MainPresenter(
+            App.instance.router,
+            AndroidScreens()
+        )
+    }
+    private var adapter: UsersRVAdapter? = null
+
     private var binding: ActivityMainBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,12 +49,9 @@ class MainActivity : MvpAppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding?.root)
 
-        val navHostFragment = supportFragmentManager
-            .findFragmentById(R.id.nav_host_fragment) as NavHostFragment
-        navController = navHostFragment.navController
-        setupActionBarWithNavController(navController)
     }
-    /*override fun onResumeFragments() {
+
+    override fun onResumeFragments() {
         super.onResumeFragments()
         App.instance.navigatorHolder.setNavigator(navigator)
     }
@@ -53,6 +60,7 @@ class MainActivity : MvpAppCompatActivity() {
         super.onPause()
         App.instance.navigatorHolder.removeNavigator()
     }
+
     override fun onBackPressed() {
         supportFragmentManager.fragments.forEach {
             if(it is BackButtonListener && it.backPressed()){
@@ -60,5 +68,5 @@ class MainActivity : MvpAppCompatActivity() {
             }
         }
         presenter.backClicked()
-    }*/
+    }
 }

@@ -16,6 +16,7 @@
     <fragment
         android:id="@+id/detailFragment"
         android:name="com.example.popularlibraries.view.DetailFragment"
+        android:label="Подробнее"
         tools:layout="@layout/fragment_details">
         <argument
             android:name="login"

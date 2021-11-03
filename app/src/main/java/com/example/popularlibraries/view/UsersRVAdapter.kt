@@ -11,11 +11,20 @@ import com.example.popularlibraries.presenter.IUserListPresenter
 class UsersRVAdapter(val presenter: IUserListPresenter) :
     RecyclerView.Adapter<UsersRVAdapter.ViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
-        ViewHolder(
+    class ViewHolder(private val binding: ItemUserBinding) :
+        RecyclerView.ViewHolder(binding.root), UserItemView {
+
+        override var pos = -1
+
+        override fun setLogin(text: String) = with(binding) {
+            loginTextView.text = text
+        }
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val viewHolder = ViewHolder(
             ItemUserBinding.inflate(
-                LayoutInflater.from(parent.context),
-                parent, false
+                LayoutInflater.from(parent.context), parent, false
             )
         ).apply {
             itemView.setOnClickListener {
@@ -26,23 +35,12 @@ class UsersRVAdapter(val presenter: IUserListPresenter) :
                 presenter.itemClickListener?.invoke(this)
             }
         }
+        return viewHolder
+    }
 
     override fun getItemCount() = presenter.getCount()
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) =
         //ViewHolder передаётся в функцию bindView в качестве интерфейса
-        presenter.bindView(holder.apply {
-            pos = position
-        })
-
-    inner class ViewHolder(private val binding: ItemUserBinding) :
-        RecyclerView.ViewHolder(binding.root), UserItemView {
-        //переменная и метод интерфейсов
-        override var pos = -1
-
-        //устанавливаем логин
-        override fun setLogin(text: String) = with(binding) {
-            loginTextView.text = text
-        }
-    }
+        presenter.bindView(holder.apply { pos = position })
 }

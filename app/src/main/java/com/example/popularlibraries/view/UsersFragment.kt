@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.example.popularlibraries.App
 import com.example.popularlibraries.databinding.FragmentUsersBinding
 import com.example.popularlibraries.model.GithubUsersRepo
 import com.example.popularlibraries.presenter.UsersPresenter
@@ -15,23 +17,35 @@ import moxy.ktx.moxyPresenter
 //касаются процедуры создания самого фрагмента. Единственный момент, на который стоит обратить
 //внимание — уничтожение ссылки на View Binding в onDestroyView, чтобы не возникла утечка памяти,
 //так как в биндинге хранится ссылка на View.
-class UsersFragment : MvpAppCompatFragment(), UsersView {
+class UsersFragment : MvpAppCompatFragment(), UsersView, BackButtonListener {
 
     companion object {
         fun newInstance() = UsersFragment()
     }
 
-    private val presenter: UsersPresenter by moxyPresenter {
-        UsersPresenter(GithubUsersRepo())
+    val presenter: UsersPresenter by moxyPresenter {
+        UsersPresenter(GithubUsersRepo(), App.instance.router)
     }
-    private var adapter: UsersRVAdapter? = null
+    var adapter: UsersRVAdapter? = null
+
     private var _binding: FragmentUsersBinding? = null
     private val binding get() = _binding!!
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?) : View? {
+    private lateinit var recyclerView: RecyclerView
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         _binding = FragmentUsersBinding.inflate(inflater, container, false)
-        val view = binding.root
-        return view
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+
     }
 
     override fun onDestroyView() {
@@ -39,19 +53,16 @@ class UsersFragment : MvpAppCompatFragment(), UsersView {
         _binding = null
     }
 
-    //Так как всё, что появится на экране — просто список, интерфейс включает всего два метода:
-    //● init() — для первичной инициализации списка, который мы будем вызывать при
-    //присоединении View к Presenter;
-    //● updateList() — для обновления содержимого списка.
     override fun init() {
-        binding.usersRecyclerview.layoutManager = LinearLayoutManager(context)
-        adapter = UsersRVAdapter(presenter.usersListPresenter)
-        binding.usersRecyclerview.adapter = adapter
+        recyclerView = binding.usersRecyclerview
+        recyclerView.layoutManager = LinearLayoutManager(context)
+        val userAdapter = UsersRVAdapter(presenter.usersListPresenter)
+        recyclerView.adapter = userAdapter
     }
 
     override fun updateList() {
         adapter?.notifyDataSetChanged()
     }
 
-    // override fun backPressed() = presenter.backPressed()
+    override fun backPressed() = presenter.backPressed()
 }
