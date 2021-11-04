@@ -1,5 +1,6 @@
 package com.example.popularlibraries.view
 
+import com.example.popularlibraries.view.users.UsersFragment
 import com.github.terrakok.cicerone.androidx.FragmentScreen
 
 //Классы Screen и FragmentScreen — часть Cicerone, причём второй — наследник первого. В его

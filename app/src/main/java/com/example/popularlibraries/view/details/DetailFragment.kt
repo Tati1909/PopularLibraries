@@ -1,4 +1,4 @@
-package com.example.popularlibraries.view
+package com.example.popularlibraries.view.details
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import com.example.popularlibraries.databinding.FragmentDetailsBinding
 import moxy.MvpAppCompatFragment
 
-class DetailFragment : MvpAppCompatFragment(), UsersView {
-    
+class DetailFragment : MvpAppCompatFragment(), DetailsView {
+
     private var _binding: FragmentDetailsBinding? = null
     private val binding get() = _binding!!
 
@@ -23,9 +23,5 @@ class DetailFragment : MvpAppCompatFragment(), UsersView {
     }
 
     override fun init() {
-    }
-
-    override fun updateList() {
-        TODO("Not yet implemented")
     }
 }

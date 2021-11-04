@@ -1,12 +1,13 @@
-package com.example.popularlibraries
+package com.example.popularlibraries.view.main
 
 import android.os.Bundle
+import com.example.popularlibraries.App
+import com.example.popularlibraries.R
 import com.example.popularlibraries.databinding.ActivityMainBinding
 import com.example.popularlibraries.presenter.MainPresenter
 import com.example.popularlibraries.view.AndroidScreens
 import com.example.popularlibraries.view.BackButtonListener
-import com.example.popularlibraries.view.MainView
-import com.example.popularlibraries.view.UsersRVAdapter
+import com.example.popularlibraries.view.users.UsersRVAdapter
 import com.github.terrakok.cicerone.androidx.AppNavigator
 import moxy.MvpAppCompatActivity
 import moxy.ktx.moxyPresenter
@@ -34,6 +35,8 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 
     val navigator = AppNavigator(this, R.id.container)
 
+    //объявляем Presenter и делегируем его создание и хранение
+    //через делегата moxyPresenter, которому отдаём функцию, создающую Presenter.
     private val presenter by moxyPresenter {
         MainPresenter(
             App.instance.router,

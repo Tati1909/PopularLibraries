@@ -1,4 +1,4 @@
-package com.example.popularlibraries.view
+package com.example.popularlibraries.view.users
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,6 +10,7 @@ import com.example.popularlibraries.App
 import com.example.popularlibraries.databinding.FragmentUsersBinding
 import com.example.popularlibraries.model.GithubUsersRepo
 import com.example.popularlibraries.presenter.UsersPresenter
+import com.example.popularlibraries.view.BackButtonListener
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 
@@ -56,6 +57,7 @@ class UsersFragment : MvpAppCompatFragment(), UsersView, BackButtonListener {
     override fun init() {
         recyclerView = binding.usersRecyclerview
         recyclerView.layoutManager = LinearLayoutManager(context)
+
         val userAdapter = UsersRVAdapter(presenter.usersListPresenter)
         recyclerView.adapter = userAdapter
     }
