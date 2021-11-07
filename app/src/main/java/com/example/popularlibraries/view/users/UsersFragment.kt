@@ -9,25 +9,25 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.popularlibraries.App
 import com.example.popularlibraries.databinding.FragmentUsersBinding
 import com.example.popularlibraries.model.GithubUsersRepo
+import com.example.popularlibraries.navigation.BackButtonListener
 import com.example.popularlibraries.presenter.UsersPresenter
-import com.example.popularlibraries.view.BackButtonListener
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 
-//Суть практически не изменилась. Все изменения, кроме нового параметра в конструкторе Presenter,
-//касаются процедуры создания самого фрагмента. Единственный момент, на который стоит обратить
-//внимание — уничтожение ссылки на View Binding в onDestroyView, чтобы не возникла утечка памяти,
-//так как в биндинге хранится ссылка на View.
 class UsersFragment : MvpAppCompatFragment(), UsersView, BackButtonListener {
 
     companion object {
         fun newInstance() = UsersFragment()
     }
 
+    ////объявляем Presenter и делегируем его создание и хранение
+    //через делегат moxyPresenter.
+    //moxyPresenter создает новый экземпляр MoxyKtxDelegate.
+    //Делегат подключается к жизненному циклу фрагмента
     val presenter: UsersPresenter by moxyPresenter {
         UsersPresenter(GithubUsersRepo(), App.instance.router)
     }
-    var adapter: UsersRVAdapter? = null
+    private var adapter: UsersRVAdapter? = null
 
     private var _binding: FragmentUsersBinding? = null
     private val binding get() = _binding!!
@@ -43,12 +43,8 @@ class UsersFragment : MvpAppCompatFragment(), UsersView, BackButtonListener {
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-
-    }
-
+    //Уничтожаем ссылки на View Binding в onDestroyView, чтобы не возникла утечка памяти,
+    //так как в биндинге хранится ссылка на View.
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

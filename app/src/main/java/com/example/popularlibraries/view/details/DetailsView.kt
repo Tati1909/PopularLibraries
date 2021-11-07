@@ -1,5 +1,6 @@
 package com.example.popularlibraries.view.details
 
+import com.example.popularlibraries.model.GithubUser
 import moxy.MvpView
 import moxy.viewstate.strategy.AddToEndSingleStrategy
 import moxy.viewstate.strategy.StateStrategyType
@@ -9,5 +10,6 @@ import moxy.viewstate.strategy.StateStrategyType
 //присоединении View к Presenter;
 @StateStrategyType(AddToEndSingleStrategy::class)
 interface DetailsView : MvpView {
-    fun init()
+
+    fun showUser(user: GithubUser)
 }

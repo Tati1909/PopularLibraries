@@ -13,6 +13,8 @@ import com.example.popularlibraries.presenter.IUserListPresenter
 //Может показаться, что если адаптер — ui, то он и
 //есть View. Но это не так.
 
+//IUserListPresenter имплементит IListPresenter с общими методами обработки списка
+
 class UsersRVAdapter(val presenter: IUserListPresenter) :
     RecyclerView.Adapter<UsersRVAdapter.ViewHolder>() {
 

@@ -1,16 +1,17 @@
 package com.example.popularlibraries.presenter
 
-import com.example.popularlibraries.view.IScreens
+import com.example.popularlibraries.navigation.UsersScreen
 import com.example.popularlibraries.view.main.MainView
 import com.github.terrakok.cicerone.Router
 import moxy.MvpPresenter
 
-class MainPresenter(val router: Router, val screens: IScreens) :
+class MainPresenter(private val router: Router) :
     MvpPresenter<MainView>() {
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
-        router.replaceScreen(screens.users())
+        //Можно так router.replaceScreen( UsersScreen.create())
+        router.newRootScreen(UsersScreen.create())
     }
 
     fun backClicked() {

@@ -1,7 +1,5 @@
 package com.example.popularlibraries.model
 
-import com.example.popularlibraries.model.GithubUser
-
 //репозиторий с фиктивными данными, которым будем пользоваться, пока не
 //реализуем получение данных из сети:
 class GithubUsersRepo {

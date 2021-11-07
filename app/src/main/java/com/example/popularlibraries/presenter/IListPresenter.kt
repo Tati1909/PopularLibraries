@@ -24,7 +24,7 @@ interface IListPresenter<V : IItemView> {
     fun getCount(): Int
 }
 
-//IUserListPresenter - интерфейс для обработки именно списка пользователей(может понадобятся методы)
+//Специальный интерфейс для обработки именно списка пользователей(может понадобятся методы)
 //IListPresenter - общий интерфейс для обработки списков
 interface IUserListPresenter : IListPresenter<UsersRVAdapter.UserItemView>
 

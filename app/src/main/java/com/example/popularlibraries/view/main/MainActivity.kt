@@ -4,10 +4,8 @@ import android.os.Bundle
 import com.example.popularlibraries.App
 import com.example.popularlibraries.R
 import com.example.popularlibraries.databinding.ActivityMainBinding
+import com.example.popularlibraries.navigation.BackButtonListener
 import com.example.popularlibraries.presenter.MainPresenter
-import com.example.popularlibraries.view.AndroidScreens
-import com.example.popularlibraries.view.BackButtonListener
-import com.example.popularlibraries.view.users.UsersRVAdapter
 import com.github.terrakok.cicerone.androidx.AppNavigator
 import moxy.MvpAppCompatActivity
 import moxy.ktx.moxyPresenter
@@ -33,17 +31,15 @@ import moxy.ktx.moxyPresenter
 //— организация работы Cicerone, подробнее о которой — в теоретической части.
 class MainActivity : MvpAppCompatActivity(), MainView {
 
-    val navigator = AppNavigator(this, R.id.container)
+    private val navigator = AppNavigator(this@MainActivity, R.id.container)
 
     //объявляем Presenter и делегируем его создание и хранение
-    //через делегата moxyPresenter, которому отдаём функцию, создающую Presenter.
+    //через делегат moxyPresenter.
+    //moxyPresenter создает новый экземпляр MoxyKtxDelegate.
+    //Делегат подключается к жизненному циклу активити
     private val presenter by moxyPresenter {
-        MainPresenter(
-            App.instance.router,
-            AndroidScreens()
-        )
+        MainPresenter(App.instance.router)
     }
-    private var adapter: UsersRVAdapter? = null
 
     private var binding: ActivityMainBinding? = null
 
@@ -54,19 +50,20 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 
     }
 
+    //устанавливаем навигатор
     override fun onResumeFragments() {
         super.onResumeFragments()
         App.instance.navigatorHolder.setNavigator(navigator)
     }
 
     override fun onPause() {
-        super.onPause()
         App.instance.navigatorHolder.removeNavigator()
+        super.onPause()
     }
 
     override fun onBackPressed() {
         supportFragmentManager.fragments.forEach {
-            if(it is BackButtonListener && it.backPressed()){
+            if (it is BackButtonListener && it.backPressed()) {
                 return
             }
         }
