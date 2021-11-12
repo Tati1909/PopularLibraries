@@ -1,5 +1,6 @@
 package com.example.popularlibraries.view.users
 
+import com.example.popularlibraries.model.GithubUser
 import moxy.MvpView
 import moxy.viewstate.strategy.AddToEndSingleStrategy
 import moxy.viewstate.strategy.StateStrategyType
@@ -11,6 +12,6 @@ import moxy.viewstate.strategy.StateStrategyType
 //Эти методы будет выполнять наша viewState
 @StateStrategyType(AddToEndSingleStrategy::class)
 interface UsersView : MvpView {
-    fun init()
-    fun updateList()
+
+    fun init(users: List<GithubUser>)
 }
