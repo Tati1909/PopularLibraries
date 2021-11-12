@@ -4,20 +4,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.popularlibraries.App
 import com.example.popularlibraries.databinding.FragmentUsersBinding
-import com.example.popularlibraries.model.GithubUsersRepo
+import com.example.popularlibraries.model.GitHubUserRepositoryFactory
+import com.example.popularlibraries.model.GithubUser
 import com.example.popularlibraries.navigation.BackButtonListener
 import com.example.popularlibraries.presenter.UsersPresenter
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 
-class UsersFragment : MvpAppCompatFragment(), UsersView, BackButtonListener {
+class UsersFragment : MvpAppCompatFragment(), UsersView, UsersRVAdapter.Delegate,
+    BackButtonListener {
 
     companion object {
-        fun newInstance() = UsersFragment()
+        fun newInstance(): Fragment = UsersFragment().apply { arguments }
     }
 
     ////объявляем Presenter и делегируем его создание и хранение
@@ -25,22 +27,31 @@ class UsersFragment : MvpAppCompatFragment(), UsersView, BackButtonListener {
     //moxyPresenter создает новый экземпляр MoxyKtxDelegate.
     //Делегат подключается к жизненному циклу фрагмента
     val presenter: UsersPresenter by moxyPresenter {
-        UsersPresenter(GithubUsersRepo(), App.instance.router)
+        UsersPresenter(
+            model = GitHubUserRepositoryFactory.create(),
+            router = App.instance.router
+        )
     }
-    private var adapter: UsersRVAdapter? = null
+    //private var adapter: UsersRVAdapter? = null
 
     private var _binding: FragmentUsersBinding? = null
     private val binding get() = _binding!!
-
-    private lateinit var recyclerView: RecyclerView
+    private val adapter = UsersRVAdapter(delegate = this)
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         _binding = FragmentUsersBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.usersRecyclerview.layoutManager = LinearLayoutManager(context)
+        binding.usersRecyclerview.adapter = adapter
     }
 
     //Уничтожаем ссылки на View Binding в onDestroyView, чтобы не возникла утечка памяти,
@@ -50,17 +61,17 @@ class UsersFragment : MvpAppCompatFragment(), UsersView, BackButtonListener {
         _binding = null
     }
 
-    override fun init() {
-        recyclerView = binding.usersRecyclerview
-        recyclerView.layoutManager = LinearLayoutManager(context)
-
-        val userAdapter = UsersRVAdapter(presenter.usersListPresenter)
-        recyclerView.adapter = userAdapter
+    override fun init(users: List<GithubUser>) {
+        //чтобы обновить представление списка, вызовите submitList(),
+        //передав список пользователей из модели
+        adapter.submitList(users)
     }
 
-    override fun updateList() {
-        adapter?.notifyDataSetChanged()
+    override fun onItemClicked(user: GithubUser) {
+        presenter.displayUser(user)
     }
 
     override fun backPressed() = presenter.backPressed()
+
+
 }
