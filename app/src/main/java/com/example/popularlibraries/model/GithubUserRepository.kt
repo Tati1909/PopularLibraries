@@ -1,9 +1,14 @@
 package com.example.popularlibraries.model
 
+import io.reactivex.rxjava3.core.Maybe
+import io.reactivex.rxjava3.core.Single
+
 
 interface GithubUserRepository {
 
-    fun getUsers(): List<GithubUser>
+    //оборачиваем в реактив запросы на сервер
+    fun getUsers(): Single<List<GithubUser>>
 
-    fun getUserByLogin(userId: String): GithubUser?
+    //Maybe
+    fun getUserByLogin(userId: String): Maybe<GithubUser>
 }

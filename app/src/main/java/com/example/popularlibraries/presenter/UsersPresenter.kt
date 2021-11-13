@@ -5,6 +5,8 @@ import com.example.popularlibraries.model.GithubUserRepository
 import com.example.popularlibraries.navigation.DetailScreen
 import com.example.popularlibraries.view.users.UsersView
 import com.github.terrakok.cicerone.Router
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.disposables.CompositeDisposable
 import moxy.MvpPresenter
 
 //Router необходим для навигации.
@@ -19,6 +21,10 @@ class UsersPresenter(
     private val router: Router
 ) : MvpPresenter<UsersView>() {
 
+    //CompositeDisposable позволяет отменять наборы цепочек
+    //для операций add(Disposable), remove(Disposable) и delete(Disposable).
+    private val disposables = CompositeDisposable()
+
     //Этот метод в первый раз вызывается при присоединении View к Presenter.
     //При уничтожении View, например, при повороте экрана, она отсоединится, а при пересоздании
     //присоединится вновь. И на новой View согласно стратегиям будут выполняться команды.
@@ -30,10 +36,12 @@ class UsersPresenter(
         // Проще говоря, вместо view.something() мы пишем viewState.init().
 
         //создаем список пользователей из модели
-        val users: List<GithubUser> = model.getUsers()
+        val users: Single<List<GithubUser>> = model.getUsers()
 
-        users.let(viewState::init)
-
+        //Параметры: onSuccess and onError
+        disposables.add(
+            users.subscribe(viewState::init, viewState::showError)
+        )
     }
 
     /**переход на экран пользователя c помощью router.navigateTo
@@ -50,5 +58,10 @@ class UsersPresenter(
     fun backPressed(): Boolean {
         router.exit()
         return true
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        disposables.clear()
     }
 }
