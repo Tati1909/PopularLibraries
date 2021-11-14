@@ -51,12 +51,13 @@ dependencies {
     implementation "com.github.moxy-community:moxy-androidx:2.1.2"
     //Cicerone
     implementation 'com.github.terrakok:cicerone:6.6'
-//Navigation
+    //Navigation
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
     //RXJava
     implementation 'io.reactivex.rxjava3:rxandroid:3.0.0'
     implementation 'io.reactivex.rxjava3:rxjava:3.0.0'
+
 
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'

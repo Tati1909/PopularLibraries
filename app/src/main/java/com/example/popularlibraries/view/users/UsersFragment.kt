@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.popularlibraries.App
@@ -65,6 +66,10 @@ class UsersFragment : MvpAppCompatFragment(), UsersView, UsersRVAdapter.Delegate
         //чтобы обновить представление списка, вызовите submitList(),
         //передав список пользователей из модели
         adapter.submitList(users)
+    }
+
+    override fun showError(error: Throwable) {
+        Toast.makeText(requireContext(), error.message, Toast.LENGTH_SHORT).show()
     }
 
     override fun onItemClicked(user: GithubUser) {

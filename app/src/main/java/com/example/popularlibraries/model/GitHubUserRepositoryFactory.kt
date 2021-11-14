@@ -5,5 +5,5 @@ package com.example.popularlibraries.model
  */
 object GitHubUserRepositoryFactory {
 
-    fun create(): GithubUserRepository = GithubUsersRepo()
+    fun create(): GithubUserRepository = GithubUsersRepoImpl()
 }
