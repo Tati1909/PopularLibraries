@@ -11,6 +11,7 @@ import com.example.popularlibraries.databinding.FragmentDetailsBinding
 import com.example.popularlibraries.model.GitHubUserRepositoryFactory
 import com.example.popularlibraries.model.GithubUser
 import com.example.popularlibraries.presenter.DetailPresenter
+import com.example.popularlibraries.scheduler.SchedulersFactory
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 
@@ -40,7 +41,8 @@ class DetailFragment : MvpAppCompatFragment(), DetailsView {
     val presenter: DetailPresenter by moxyPresenter {
         DetailPresenter(
             userLogin = userLogin,
-            gitHubRepo = GitHubUserRepositoryFactory.create()
+            gitHubRepo = GitHubUserRepositoryFactory.create(),
+            schedulers = SchedulersFactory.create()
         )
     }
 
