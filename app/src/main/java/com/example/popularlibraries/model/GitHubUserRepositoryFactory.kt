@@ -7,5 +7,5 @@ import com.example.popularlibraries.model.datasource.UserDataSourceFactory
  */
 object GitHubUserRepositoryFactory {
 
-    fun create(): GithubUserRepository = GithubUsersRepoImpl(UserDataSourceFactory.create())
+    fun create(): GithubUsersRepository = GithubUsersRepository(UserDataSourceFactory.create())
 }

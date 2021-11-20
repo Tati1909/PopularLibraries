@@ -1,7 +1,7 @@
 package com.example.popularlibraries.presenter
 
 import com.example.popularlibraries.model.GithubUser
-import com.example.popularlibraries.model.GithubUserRepository
+import com.example.popularlibraries.model.GithubUsersRepository
 import com.example.popularlibraries.navigation.DetailScreen
 import com.example.popularlibraries.scheduler.Schedulers
 import com.example.popularlibraries.view.users.UsersView
@@ -19,7 +19,7 @@ import moxy.MvpPresenter
 class UsersPresenter(
     //Schedulers - наш интерфейс
     private val schedulers: Schedulers,
-    private val model: GithubUserRepository,
+    private val model: GithubUsersRepository,
     private val router: Router
 ) : MvpPresenter<UsersView>() {
 

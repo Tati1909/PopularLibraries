@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.popularlibraries.databinding.ItemUserBinding
 import com.example.popularlibraries.model.GithubUser
+import com.example.popularlibraries.view.setStartDrawableCircleImageFromUri
 
 //Адаптер не имеет ссылок на данные и  делегирует процесс наполнения View через delegate.
 //Адаптер — это фреймворковая вещь, а, значит, он —
@@ -28,7 +29,9 @@ class UsersRVAdapter(private val delegate: Delegate) :
     class ViewHolder(private val binding: ItemUserBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(gitHubUser: GithubUser, delegate: Delegate) {
+        fun bind(gitHubUser: GithubUser, delegate: Delegate?) {
+            //загружаем аватарку слева от логина пользователя
+            binding.loginTextView.setStartDrawableCircleImageFromUri(gitHubUser.avatarUrl)
             binding.loginTextView.text = gitHubUser.login
         }
     }

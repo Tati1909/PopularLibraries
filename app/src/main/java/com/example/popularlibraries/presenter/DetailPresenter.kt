@@ -1,7 +1,7 @@
 package com.example.popularlibraries.presenter
 
 import com.example.popularlibraries.model.GithubUser
-import com.example.popularlibraries.model.GithubUserRepository
+import com.example.popularlibraries.model.GithubUsersRepository
 import com.example.popularlibraries.scheduler.Schedulers
 import com.example.popularlibraries.view.details.DetailsView
 import io.reactivex.rxjava3.disposables.CompositeDisposable
@@ -9,7 +9,7 @@ import moxy.MvpPresenter
 
 class DetailPresenter(
     private val userLogin: String,
-    private val gitHubRepo: GithubUserRepository,
+    private val gitHubRepo: GithubUsersRepository,
     //Schedulers - наш интерфейс
     private val schedulers: Schedulers
 ) :

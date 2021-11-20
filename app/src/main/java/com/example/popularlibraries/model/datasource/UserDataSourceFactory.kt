@@ -4,5 +4,5 @@ import com.example.popularlibraries.model.api.GithubApiFactory
 
 object UserDataSourceFactory {
 
-    fun create(): UserDataSource = CloudUserDataSource(GithubApiFactory.create())
+    fun create(): CloudUserDataSource = CloudUserDataSource(GithubApiFactory.create())
 }

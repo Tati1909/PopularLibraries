@@ -12,6 +12,7 @@ import com.example.popularlibraries.model.GitHubUserRepositoryFactory
 import com.example.popularlibraries.model.GithubUser
 import com.example.popularlibraries.presenter.DetailPresenter
 import com.example.popularlibraries.scheduler.SchedulersFactory
+import com.example.popularlibraries.view.setStartDrawableCircleImageFromUri
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 
@@ -59,6 +60,7 @@ class DetailFragment : MvpAppCompatFragment(), DetailsView {
     }
 
     override fun showUser(user: GithubUser) {
+        binding.loginUser.setStartDrawableCircleImageFromUri(user.avatarUrl)
         binding.loginUser.text = user.login
     }
 
