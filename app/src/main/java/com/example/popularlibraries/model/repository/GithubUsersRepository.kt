@@ -1,10 +1,14 @@
-package com.example.popularlibraries.model
+package com.example.popularlibraries.model.repository
 
-import com.example.popularlibraries.model.datasource.CloudUserDataSource
+import com.example.popularlibraries.model.cloud.CloudUserDataSource
+import com.example.popularlibraries.model.datasource.GitHubUserRepo
+import com.example.popularlibraries.model.datasource.GithubUser
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Single
 
-class GithubUsersRepository(private val cloud: CloudUserDataSource) {
+class GithubUsersRepository(
+    private val cloud: CloudUserDataSource
+) {
 
     //получаем список пользователей
     fun getUsers(): Single<List<GithubUser>> {
@@ -20,11 +24,15 @@ class GithubUsersRepository(private val cloud: CloudUserDataSource) {
                     .firstOrNull { user: GithubUser -> user.login == userId }
                     ?.let { user -> Maybe.just(user) }
                     ?: Maybe.empty()
-                //или вернет пользователя(если не null)
-                //или вернет пустоту(если null)
+                /**
+                или вернет пользователя(если не null)
+                или вернет пустоту(если null)
+                flatMapMaybe переводит Single в Maybe
+                 */
             }
-        /**
-         * flatMapMaybe переводит Single в Maybe
-         */
     }
+
+    //получаем список репозиториев
+    fun getUserRepositories(repositoriesUrl: String): Maybe<List<GitHubUserRepo>> =
+        cloud.getUserRepositories(repositoriesUrl)
 }

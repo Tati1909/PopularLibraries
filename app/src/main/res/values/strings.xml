@@ -3,4 +3,10 @@
     <string name="counter_one">Счетчик 1</string>
     <string name="counter_two">Счетчик 2</string>
     <string name="counter_three">Счетчик 3</string>
+    <string name="user_repositories_not_found_message">User\'s repositories not found</string>
+    <string name="user_not_found_message">User not found</string>
+    <string name="tittle_list">Список репозиториев пользователя:</string>
+    <string name="repository">repository</string>
+    <string name="login">Логин пользователя</string>
+
 </resources>

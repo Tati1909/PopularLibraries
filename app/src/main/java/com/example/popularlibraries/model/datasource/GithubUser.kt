@@ -1,4 +1,4 @@
-package com.example.popularlibraries.model
+package com.example.popularlibraries.model.datasource
 
 import com.google.gson.annotations.SerializedName
 
@@ -6,7 +6,8 @@ import com.google.gson.annotations.SerializedName
 //Загружаем список пользователей с их данными с сайта GitHub.
 
 data class GithubUser(
-    @SerializedName("id") val id: String,
+    @SerializedName("id") val id: Long,
     @SerializedName("login") val login: String,
-    @SerializedName("avatar_url") val avatarUrl: String
+    @SerializedName("avatar_url") val avatarUrl: String,
+    @SerializedName("repos_url") val reposUrl: String
 )

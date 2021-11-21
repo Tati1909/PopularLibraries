@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.popularlibraries.databinding.ItemUserBinding
-import com.example.popularlibraries.model.GithubUser
+import com.example.popularlibraries.model.datasource.GithubUser
 import com.example.popularlibraries.view.setStartDrawableCircleImageFromUri
 
 //Адаптер не имеет ссылок на данные и  делегирует процесс наполнения View через delegate.

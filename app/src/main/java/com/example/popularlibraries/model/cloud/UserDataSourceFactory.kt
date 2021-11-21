@@ -1,4 +1,4 @@
-package com.example.popularlibraries.model.datasource
+package com.example.popularlibraries.model.cloud
 
 import com.example.popularlibraries.model.api.GithubApiFactory
 

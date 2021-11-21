@@ -1,7 +1,8 @@
-package com.example.popularlibraries.model.datasource
+package com.example.popularlibraries.model.cloud
 
-import com.example.popularlibraries.model.GithubUser
 import com.example.popularlibraries.model.api.GithubApi
+import com.example.popularlibraries.model.datasource.GitHubUserRepo
+import com.example.popularlibraries.model.datasource.GithubUser
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Single
 
@@ -15,4 +16,7 @@ class CloudUserDataSource(private val githubApi: GithubApi) {
         return githubApi
             .getUserByLogin(userId)
     }
+
+    fun getUserRepositories(repositoriesUrl: String): Maybe<List<GitHubUserRepo>> =
+        githubApi.getUserRepositories(repositoriesUrl)
 }

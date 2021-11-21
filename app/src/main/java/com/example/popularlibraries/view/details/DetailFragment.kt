@@ -7,9 +7,12 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.popularlibraries.R
 import com.example.popularlibraries.databinding.FragmentDetailsBinding
-import com.example.popularlibraries.model.GitHubUserRepositoryFactory
-import com.example.popularlibraries.model.GithubUser
+import com.example.popularlibraries.model.entity.GitHubUserEntity
+import com.example.popularlibraries.model.entity.GitHubUserRepoEntity
+import com.example.popularlibraries.model.repository.GitHubUserRepositoryFactory
 import com.example.popularlibraries.presenter.DetailPresenter
 import com.example.popularlibraries.scheduler.SchedulersFactory
 import com.example.popularlibraries.view.setStartDrawableCircleImageFromUri
@@ -50,6 +53,9 @@ class DetailFragment : MvpAppCompatFragment(), DetailsView {
     private var _binding: FragmentDetailsBinding? = null
     private val binding get() = _binding!!
 
+    private val userReposAdapter: UserReposAdapter = UserReposAdapter()
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -59,9 +65,39 @@ class DetailFragment : MvpAppCompatFragment(), DetailsView {
         return binding.root
     }
 
-    override fun showUser(user: GithubUser) {
-        binding.loginUser.setStartDrawableCircleImageFromUri(user.avatarUrl)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.listRepositoryRecyclerview.layoutManager = LinearLayoutManager(context)
+        binding.listRepositoryRecyclerview.adapter = userReposAdapter
+    }
+
+    override fun showUser(user: GitHubUserEntity) {
+        user.avatarUrl?.let { avatarUrl ->
+            binding.loginUser.setStartDrawableCircleImageFromUri(avatarUrl)
+        }
         binding.loginUser.text = user.login
+    }
+
+    override fun showRepos(gitHubUserRepos: List<GitHubUserRepoEntity>) {
+        userReposAdapter.submitList(gitHubUserRepos)
+    }
+
+    override fun showUserNotFound() {
+        Toast.makeText(
+            requireContext(),
+            getString(R.string.user_not_found_message),
+            Toast.LENGTH_LONG
+        ).show()
+
+    }
+
+    override fun showReposNotFound() {
+        Toast.makeText(
+            requireContext(),
+            getString(R.string.user_repositories_not_found_message),
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     override fun showError(error: Throwable) {

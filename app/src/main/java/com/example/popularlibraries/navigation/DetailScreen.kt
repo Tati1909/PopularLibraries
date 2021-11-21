@@ -1,6 +1,6 @@
 package com.example.popularlibraries.navigation
 
-import com.example.popularlibraries.model.GithubUser
+import com.example.popularlibraries.model.datasource.GithubUser
 import com.example.popularlibraries.view.details.DetailFragment
 import com.github.terrakok.cicerone.Screen
 import com.github.terrakok.cicerone.androidx.FragmentScreen

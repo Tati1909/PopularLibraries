@@ -1,10 +1,12 @@
 package com.example.popularlibraries.presenter
 
-import com.example.popularlibraries.model.GithubUser
-import com.example.popularlibraries.model.GithubUsersRepository
+import com.example.popularlibraries.model.entity.GitHubUserEntity
+import com.example.popularlibraries.model.entity.GitHubUserRepoEntity
+import com.example.popularlibraries.model.repository.GithubUsersRepository
 import com.example.popularlibraries.scheduler.Schedulers
 import com.example.popularlibraries.view.details.DetailsView
 import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.kotlin.plusAssign
 import moxy.MvpPresenter
 
 class DetailPresenter(
@@ -25,18 +27,55 @@ class DetailPresenter(
         /***
         // Параметры subscribe :
         onSuccess - чтобы принимать значение успеха от Maybe
-        onError - Consumer <Throwable>, который вы разработали, чтобы принимать любые уведомления об ошибках от Maybe
-        onComplete - чтобы принять уведомление о завершении от Maybe, т. е. это будет наше empty.
-        В onComplete мы не попадем, потому что обработаем его здесь: .defaultIfEmpty(GithubUser(" ")) -
-        если пустота, то верни нам пользователя с пустым логином*/
-        disposables.add(
-            gitHubRepo
-                .getUserByLogin(userLogin)
-                .subscribeOn(schedulers.background())
+        onError - получаем тост об ошибке
+        onComplete - получаем тост о том, что нет выбранного пользователя */
+        userLogin.let { login ->
+            disposables.add(
+                gitHubRepo
+                    .getUserByLogin(login)
+                    .map(GitHubUserEntity.Mapper::map)
+                    .subscribeOn(schedulers.background())
+                    .observeOn(schedulers.main())
+                    .subscribe(
+                        { userEntity -> doOnSuccessLoadUserLoginData(userEntity) },
+                        { throwable -> viewState.showError(throwable) },
+                        { viewState.showUserNotFound() }
+                    )
+            )
+        }
+    }
+
+    private fun doOnSuccessLoadUserLoginData(user: GitHubUserEntity) {
+        viewState.showUser(user)
+        loadUserReposData(user)
+    }
+
+    private fun loadUserReposData(user: GitHubUserEntity) {
+        /**Здесь мы передаем ссылку на репозитории repositoriesUrl
+        для их загрузки*/
+        user.userReposUrl?.let { repositoriesUrl ->
+            disposables += gitHubRepo.getUserRepositories(repositoriesUrl)
+                .map { gitHubUserRepos -> gitHubUserRepos.map(GitHubUserRepoEntity.Mapper::map) }
                 .observeOn(schedulers.main())
-                .defaultIfEmpty(GithubUser(" ", "", ""))
-                .subscribe(viewState::showUser, viewState::showError)
-        )
+                .subscribeOn(schedulers.background())
+                .subscribe(
+                    this::doOnSuccessLoadUserReposData,
+                    this::doOnErrorLoadUserReposData,
+                    this::doOnCompleteLoadUserReposData
+                )
+        }
+    }
+
+    private fun doOnSuccessLoadUserReposData(gitHubUserRepos: List<GitHubUserRepoEntity>) {
+        viewState.showRepos(gitHubUserRepos)
+    }
+
+    private fun doOnErrorLoadUserReposData(error: Throwable) {
+        viewState.showError(error)
+    }
+
+    private fun doOnCompleteLoadUserReposData() {
+        viewState.showReposNotFound()
     }
 
     override fun onDestroy() {

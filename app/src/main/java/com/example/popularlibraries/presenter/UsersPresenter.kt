@@ -1,7 +1,7 @@
 package com.example.popularlibraries.presenter
 
-import com.example.popularlibraries.model.GithubUser
-import com.example.popularlibraries.model.GithubUsersRepository
+import com.example.popularlibraries.model.datasource.GithubUser
+import com.example.popularlibraries.model.repository.GithubUsersRepository
 import com.example.popularlibraries.navigation.DetailScreen
 import com.example.popularlibraries.scheduler.Schedulers
 import com.example.popularlibraries.view.users.UsersView

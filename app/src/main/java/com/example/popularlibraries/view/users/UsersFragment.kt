@@ -9,8 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.popularlibraries.App
 import com.example.popularlibraries.databinding.FragmentUsersBinding
-import com.example.popularlibraries.model.GitHubUserRepositoryFactory
-import com.example.popularlibraries.model.GithubUser
+import com.example.popularlibraries.model.datasource.GithubUser
+import com.example.popularlibraries.model.repository.GitHubUserRepositoryFactory
 import com.example.popularlibraries.navigation.BackButtonListener
 import com.example.popularlibraries.presenter.UsersPresenter
 import com.example.popularlibraries.scheduler.SchedulersFactory
