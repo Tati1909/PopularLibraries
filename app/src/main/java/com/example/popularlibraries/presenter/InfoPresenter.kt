@@ -1,0 +1,38 @@
+package com.example.popularlibraries.presenter
+
+import com.example.popularlibraries.model.entity.GitHubUserRepoInfoEntity
+import com.example.popularlibraries.model.repository.GithubUsersRepository
+import com.example.popularlibraries.scheduler.Schedulers
+import com.example.popularlibraries.view.info.InfoView
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.kotlin.plusAssign
+import moxy.MvpPresenter
+
+class InfoPresenter(
+    private val gitHubUsersRepository: GithubUsersRepository,
+    private val repositoryUrl: String?,
+    private val schedulers: Schedulers,
+) : MvpPresenter<InfoView>() {
+    private val disposables = CompositeDisposable()
+
+    override fun onFirstViewAttach() {
+        super.onFirstViewAttach()
+        repositoryUrl?.let {
+            disposables +=
+                gitHubUsersRepository.getUserRepositoryInfo(it)
+                    .map(GitHubUserRepoInfoEntity.Mapper::map)
+                    .observeOn(schedulers.main())
+                    .subscribeOn(schedulers.background())
+                    .subscribe(
+                        viewState::showRepoInfo,
+                        viewState::showError,
+                        viewState::showRepoNotFound
+                    )
+        }
+    }
+
+    override fun onDestroy() {
+        disposables.dispose()
+        super.onDestroy()
+    }
+}

@@ -3,8 +3,10 @@ package com.example.popularlibraries.presenter
 import com.example.popularlibraries.model.entity.GitHubUserEntity
 import com.example.popularlibraries.model.entity.GitHubUserRepoEntity
 import com.example.popularlibraries.model.repository.GithubUsersRepository
+import com.example.popularlibraries.navigation.InfoScreen
 import com.example.popularlibraries.scheduler.Schedulers
 import com.example.popularlibraries.view.details.DetailsView
+import com.github.terrakok.cicerone.Router
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.plusAssign
 import moxy.MvpPresenter
@@ -13,7 +15,8 @@ class DetailPresenter(
     private val userLogin: String,
     private val gitHubRepo: GithubUsersRepository,
     //Schedulers - наш интерфейс
-    private val schedulers: Schedulers
+    private val schedulers: Schedulers,
+    private val router: Router
 ) :
     MvpPresenter<DetailsView>() {
 
@@ -77,6 +80,13 @@ class DetailPresenter(
     private fun doOnCompleteLoadUserReposData() {
         viewState.showReposNotFound()
     }
+
+    /**переход на экран с инфо о репозитории c помощью router.navigateTo
+    //при нажатии на элемент создаем объект InfoScreen и вызываем метод create,
+    //который в свою очередь создает InfoFragment и ложит ссылку репозитория пользователя в корзину
+     */
+    fun displayUser(repoUrl: String) =
+        router.navigateTo(InfoScreen(repoUrl).create())
 
     override fun onDestroy() {
         super.onDestroy()

@@ -1,6 +1,7 @@
 package com.example.popularlibraries.model.api
 
 import com.example.popularlibraries.model.datasource.GitHubUserRepo
+import com.example.popularlibraries.model.datasource.GitHubUserRepoInfo
 import com.example.popularlibraries.model.datasource.GithubUser
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Single
@@ -27,4 +28,7 @@ interface GithubApi {
     @GET
     fun getUserRepositories(@Url repositoriesUrl: String): Maybe<List<GitHubUserRepo>>
 
+    //получаем информацию о выбранном репозитории пользователя
+    @GET
+    fun getUserRepositoryInfo(@Url repositoryUrl: String): Maybe<GitHubUserRepoInfo>
 }

@@ -8,13 +8,22 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.popularlibraries.databinding.ItemDetailsBinding
 import com.example.popularlibraries.model.entity.GitHubUserRepoEntity
 
-class UserReposAdapter() :
+class UserReposAdapter(private val delegate: Delegate) :
     ListAdapter<GitHubUserRepoEntity, UserReposAdapter.UserReposViewHolder>(DiffCallback) {
+
+    interface Delegate {
+        /**
+         * Событие наступает при выборе
+         * пользователя из списка
+         */
+        fun onItemClicked(gitHubUserRepoEntity: GitHubUserRepoEntity)
+    }
 
     inner class UserReposViewHolder(private val binding: ItemDetailsBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(gitHubUserRepoEntity: GitHubUserRepoEntity) {
+        fun bind(gitHubUserRepoEntity: GitHubUserRepoEntity, delegate: Delegate?) {
+
             binding.textViewItem.text = gitHubUserRepoEntity.name
         }
     }
@@ -24,21 +33,16 @@ class UserReposAdapter() :
             ItemDetailsBinding.inflate(
                 LayoutInflater.from(parent.context), parent, false
             )
-        )
-
-        /**  return UsersRVAdapter.ViewHolder(
-        ItemUserBinding.inflate(
-        LayoutInflater.from(parent.context), parent, false))
-        .apply {
-        itemView.setOnClickListener {
-        val position = this.adapterPosition
-        delegate.onItemClicked(getItem(position))
+        ).apply {
+            itemView.setOnClickListener {
+                val position = this.adapterPosition
+                delegate.onItemClicked(getItem(position))
+            }
         }
-        }*/
     }
 
     override fun onBindViewHolder(holder: UserReposViewHolder, position: Int) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), delegate)
     }
 
     companion object {

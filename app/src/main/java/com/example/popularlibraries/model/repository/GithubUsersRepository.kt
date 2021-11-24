@@ -2,6 +2,7 @@ package com.example.popularlibraries.model.repository
 
 import com.example.popularlibraries.model.cloud.CloudUserDataSource
 import com.example.popularlibraries.model.datasource.GitHubUserRepo
+import com.example.popularlibraries.model.datasource.GitHubUserRepoInfo
 import com.example.popularlibraries.model.datasource.GithubUser
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Single
@@ -35,4 +36,9 @@ class GithubUsersRepository(
     //получаем список репозиториев
     fun getUserRepositories(repositoriesUrl: String): Maybe<List<GitHubUserRepo>> =
         cloud.getUserRepositories(repositoriesUrl)
+
+    //получаем информацию о репозитории пользователя
+    fun getUserRepositoryInfo(repositoryUrl: String): Maybe<GitHubUserRepoInfo> =
+        cloud.getUserRepositoryInfo(repositoryUrl)
+    //.flatMap { gitHubUserRepoInfo -> gitHubUserCache.retain(repositoryUrl, gitHubUserRepoInfo).toMaybe() }
 }

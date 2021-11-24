@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.popularlibraries.App
 import com.example.popularlibraries.R
 import com.example.popularlibraries.databinding.FragmentDetailsBinding
 import com.example.popularlibraries.model.entity.GitHubUserEntity
@@ -19,7 +20,7 @@ import com.example.popularlibraries.view.setStartDrawableCircleImageFromUri
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 
-class DetailFragment : MvpAppCompatFragment(), DetailsView {
+class DetailFragment : MvpAppCompatFragment(), DetailsView, UserReposAdapter.Delegate {
 
     companion object {
 
@@ -46,15 +47,15 @@ class DetailFragment : MvpAppCompatFragment(), DetailsView {
         DetailPresenter(
             userLogin = userLogin,
             gitHubRepo = GitHubUserRepositoryFactory.create(),
-            schedulers = SchedulersFactory.create()
+            schedulers = SchedulersFactory.create(),
+            router = App.instance.router
         )
     }
 
     private var _binding: FragmentDetailsBinding? = null
     private val binding get() = _binding!!
 
-    private val userReposAdapter: UserReposAdapter = UserReposAdapter()
-
+    private val userReposAdapter: UserReposAdapter = UserReposAdapter(delegate = this)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -102,5 +103,13 @@ class DetailFragment : MvpAppCompatFragment(), DetailsView {
 
     override fun showError(error: Throwable) {
         Toast.makeText(requireContext(), error.message, Toast.LENGTH_SHORT).show()
+    }
+
+    /**
+     * При нажатии на репозиторий переходим на другой экран и
+     * передаем ссылку на выбранный репозиторий - repoUrl
+     */
+    override fun onItemClicked(gitHubUserRepoEntity: GitHubUserRepoEntity) {
+        presenter.displayUser(gitHubUserRepoEntity.repoUrl)
     }
 }
