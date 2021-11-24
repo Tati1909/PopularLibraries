@@ -9,10 +9,11 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.popularlibraries.App
 import com.example.popularlibraries.databinding.FragmentUsersBinding
-import com.example.popularlibraries.model.GitHubUserRepositoryFactory
-import com.example.popularlibraries.model.GithubUser
+import com.example.popularlibraries.model.datasource.GithubUser
+import com.example.popularlibraries.model.repository.GitHubUserRepositoryFactory
 import com.example.popularlibraries.navigation.BackButtonListener
 import com.example.popularlibraries.presenter.UsersPresenter
+import com.example.popularlibraries.scheduler.SchedulersFactory
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 
@@ -29,11 +30,11 @@ class UsersFragment : MvpAppCompatFragment(), UsersView, UsersRVAdapter.Delegate
     //Делегат подключается к жизненному циклу фрагмента
     val presenter: UsersPresenter by moxyPresenter {
         UsersPresenter(
+            schedulers = SchedulersFactory.create(),
             model = GitHubUserRepositoryFactory.create(),
             router = App.instance.router
         )
     }
-    //private var adapter: UsersRVAdapter? = null
 
     private var _binding: FragmentUsersBinding? = null
     private val binding get() = _binding!!

@@ -13,4 +13,11 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+
+    <style name="TextInfoStyle">
+        <item name="android:textSize">18sp</item>
+        <item name="selectionRequired">true</item>
+        <item name="singleLine">true</item>
+        <item name="singleSelection">true</item>
+    </style>
 </resources>

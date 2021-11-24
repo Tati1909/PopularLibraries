@@ -1,11 +1,11 @@
 package com.example.popularlibraries.presenter
 
-import com.example.popularlibraries.model.GithubUser
-import com.example.popularlibraries.model.GithubUserRepository
+import com.example.popularlibraries.model.datasource.GithubUser
+import com.example.popularlibraries.model.repository.GithubUsersRepository
 import com.example.popularlibraries.navigation.DetailScreen
+import com.example.popularlibraries.scheduler.Schedulers
 import com.example.popularlibraries.view.users.UsersView
 import com.github.terrakok.cicerone.Router
-import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import moxy.MvpPresenter
 
@@ -17,7 +17,9 @@ import moxy.MvpPresenter
 //● при первом присоединении View вызываем метод init(), в котором напишем все операции по
 //инициализации View;
 class UsersPresenter(
-    private val model: GithubUserRepository,
+    //Schedulers - наш интерфейс
+    private val schedulers: Schedulers,
+    private val model: GithubUsersRepository,
     private val router: Router
 ) : MvpPresenter<UsersView>() {
 
@@ -35,12 +37,16 @@ class UsersPresenter(
         //заменяем в Presenter все обращения к View на обращения к ViewState.
         // Проще говоря, вместо view.something() мы пишем viewState.init().
 
-        //создаем список пользователей из модели
-        val users: Single<List<GithubUser>> = model.getUsers()
-
         //Параметры: onSuccess and onError
         disposables.add(
-            users.subscribe(viewState::init, viewState::showError)
+            model
+                .getUsers()
+                .subscribeOn(schedulers.background())
+                .observeOn(schedulers.main())
+                .subscribe(
+                    viewState::init,
+                    viewState::showError
+                )
         )
     }
 

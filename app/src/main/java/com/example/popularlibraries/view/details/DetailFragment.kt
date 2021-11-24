@@ -7,14 +7,20 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.popularlibraries.App
+import com.example.popularlibraries.R
 import com.example.popularlibraries.databinding.FragmentDetailsBinding
-import com.example.popularlibraries.model.GitHubUserRepositoryFactory
-import com.example.popularlibraries.model.GithubUser
+import com.example.popularlibraries.model.entity.GitHubUserEntity
+import com.example.popularlibraries.model.entity.GitHubUserRepoEntity
+import com.example.popularlibraries.model.repository.GitHubUserRepositoryFactory
 import com.example.popularlibraries.presenter.DetailPresenter
+import com.example.popularlibraries.scheduler.SchedulersFactory
+import com.example.popularlibraries.view.setStartDrawableCircleImageFromUri
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 
-class DetailFragment : MvpAppCompatFragment(), DetailsView {
+class DetailFragment : MvpAppCompatFragment(), DetailsView, UserReposAdapter.Delegate {
 
     companion object {
 
@@ -40,12 +46,16 @@ class DetailFragment : MvpAppCompatFragment(), DetailsView {
     val presenter: DetailPresenter by moxyPresenter {
         DetailPresenter(
             userLogin = userLogin,
-            gitHubRepo = GitHubUserRepositoryFactory.create()
+            gitHubRepo = GitHubUserRepositoryFactory.create(),
+            schedulers = SchedulersFactory.create(),
+            router = App.instance.router
         )
     }
 
     private var _binding: FragmentDetailsBinding? = null
     private val binding get() = _binding!!
+
+    private val userReposAdapter: UserReposAdapter = UserReposAdapter(delegate = this)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,11 +66,58 @@ class DetailFragment : MvpAppCompatFragment(), DetailsView {
         return binding.root
     }
 
-    override fun showUser(user: GithubUser) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.listRepositoryRecyclerview.layoutManager = LinearLayoutManager(context)
+        binding.listRepositoryRecyclerview.adapter = userReposAdapter
+    }
+
+    override fun showUser(user: GitHubUserEntity) {
+        user.avatarUrl?.let { avatarUrl ->
+            binding.loginUser.setStartDrawableCircleImageFromUri(avatarUrl)
+        }
         binding.loginUser.text = user.login
+    }
+
+    override fun showRepos(gitHubUserRepos: List<GitHubUserRepoEntity>) {
+        userReposAdapter.submitList(gitHubUserRepos)
+    }
+
+    override fun loadingLayoutIsVisible(isVisible: Boolean) {
+        binding.loadingLayout.root.visibility = if (isVisible) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
+    }
+
+    override fun showUserNotFound() {
+        Toast.makeText(
+            requireContext(),
+            getString(R.string.user_not_found_message),
+            Toast.LENGTH_LONG
+        ).show()
+
+    }
+
+    override fun showReposNotFound() {
+        Toast.makeText(
+            requireContext(),
+            getString(R.string.user_repositories_not_found_message),
+            Toast.LENGTH_LONG
+        ).show()
     }
 
     override fun showError(error: Throwable) {
         Toast.makeText(requireContext(), error.message, Toast.LENGTH_SHORT).show()
+    }
+
+    /**
+     * При нажатии на репозиторий переходим на другой экран и
+     * передаем ссылку на выбранный репозиторий - repoUrl
+     */
+    override fun onItemClicked(gitHubUserRepoEntity: GitHubUserRepoEntity) {
+        presenter.displayUser(gitHubUserRepoEntity.repoUrl)
     }
 }

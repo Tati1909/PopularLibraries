@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <dimen name="default_margin_size">5dp</dimen>
     <dimen name="margin_start">16dp</dimen>
+    <dimen name="margin_start_tittle">48dp</dimen>
     <dimen name="view_height">66dp</dimen>
+    <dimen name="dimen_avatar">200dp</dimen>
     <dimen name="text_size_default">18sp</dimen>
+    <dimen name="text_size_tittle">26sp</dimen>
 </resources>

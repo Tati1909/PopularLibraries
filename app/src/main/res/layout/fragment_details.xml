@@ -4,21 +4,49 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/login_user"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/avagit" />
-
     <TextView
         android:id="@+id/login_user"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/view_height"
-        android:textAlignment="center"
+        android:layout_height="@dimen/dimen_avatar"
+        android:layout_marginStart="@dimen/margin_start_tittle"
+        android:textSize="@dimen/text_size_tittle"
+        android:paddingTop="@dimen/margin_start"
+        app:layout_constraintBottom_toTopOf="@id/tittle_list_repositories"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:drawablePadding="@dimen/margin_start"
+        app:layout_constraintVertical_bias="0.079" />
+
+    <TextView
+        android:id="@+id/tittle_list_repositories"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margin_start"
+        app:layout_constraintBottom_toTopOf="@+id/list_repository_recyclerview"
+        android:text="@string/tittle_list"
         android:textSize="@dimen/text_size_default"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/login_user" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/list_repository_recyclerview"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:padding="@dimen/margin_start"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tittle_list_repositories" />
+
+    <include
+        android:id="@+id/loading_layout"
+        layout="@layout/loading_layout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
