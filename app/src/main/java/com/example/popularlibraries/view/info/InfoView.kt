@@ -13,6 +13,9 @@ interface InfoView : ScreenView {
     @AddToEndSingle
     fun showRepoInfo(gitHubUserRepoInfoEntity: GitHubUserRepoInfoEntity)
 
+    @AddToEndSingle
+    fun loadingLayoutIsVisible(isVisible: Boolean)
+
     @OneExecution
     fun showRepoNotFound()
 }

@@ -67,11 +67,23 @@ class InfoFragment : MvpAppCompatFragment(), InfoView {
             watchersCount.text = gitHubUserRepoInfoEntity.watchersCount.toString()
             language.text = gitHubUserRepoInfoEntity.language
             forksCount.text = gitHubUserRepoInfoEntity.forksCount.toString()
+
+            loadingLayoutIsVisible(false)
+        }
+
+    }
+
+    override fun loadingLayoutIsVisible(isVisible: Boolean) {
+        binding.loadingLayout.root.visibility = if (isVisible) {
+            View.VISIBLE
+        } else {
+            View.GONE
         }
     }
 
     override fun showError(error: Throwable) {
         Toast.makeText(requireContext(), error.message, Toast.LENGTH_LONG).show()
+        loadingLayoutIsVisible(false)
     }
 
     override fun showRepoNotFound() {
@@ -80,6 +92,7 @@ class InfoFragment : MvpAppCompatFragment(), InfoView {
             getString(R.string.user_repository_not_found_message),
             Toast.LENGTH_LONG
         ).show()
+        loadingLayoutIsVisible(false)
     }
 
 }

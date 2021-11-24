@@ -17,6 +17,8 @@ class InfoPresenter(
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
+
+        viewState.loadingLayoutIsVisible(true)
         repositoryUrl?.let {
             disposables +=
                 gitHubUsersRepository.getUserRepositoryInfo(it)

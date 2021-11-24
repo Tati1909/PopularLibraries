@@ -84,6 +84,14 @@ class DetailFragment : MvpAppCompatFragment(), DetailsView, UserReposAdapter.Del
         userReposAdapter.submitList(gitHubUserRepos)
     }
 
+    override fun loadingLayoutIsVisible(isVisible: Boolean) {
+        binding.loadingLayout.root.visibility = if (isVisible) {
+            View.VISIBLE
+        } else {
+            View.GONE
+        }
+    }
+
     override fun showUserNotFound() {
         Toast.makeText(
             requireContext(),

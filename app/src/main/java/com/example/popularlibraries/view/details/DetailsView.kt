@@ -16,6 +16,9 @@ interface DetailsView : ScreenView {
     @AddToEndSingle
     fun showRepos(gitHubUserRepos: List<GitHubUserRepoEntity>)
 
+    @AddToEndSingle
+    fun loadingLayoutIsVisible(isVisible: Boolean)
+
     @OneExecution
     fun showUserNotFound()
 

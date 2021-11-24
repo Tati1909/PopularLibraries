@@ -56,6 +56,7 @@ class DetailPresenter(
     private fun loadUserReposData(user: GitHubUserEntity) {
         /**Здесь мы передаем ссылку на репозитории repositoriesUrl
         для их загрузки*/
+        viewState.loadingLayoutIsVisible(true)
         user.userReposUrl?.let { repositoriesUrl ->
             disposables += gitHubRepo.getUserRepositories(repositoriesUrl)
                 .map { gitHubUserRepos -> gitHubUserRepos.map(GitHubUserRepoEntity.Mapper::map) }
@@ -71,14 +72,17 @@ class DetailPresenter(
 
     private fun doOnSuccessLoadUserReposData(gitHubUserRepos: List<GitHubUserRepoEntity>) {
         viewState.showRepos(gitHubUserRepos)
+        viewState.loadingLayoutIsVisible(false)
     }
 
     private fun doOnErrorLoadUserReposData(error: Throwable) {
         viewState.showError(error)
+        viewState.loadingLayoutIsVisible(false)
     }
 
     private fun doOnCompleteLoadUserReposData() {
         viewState.showReposNotFound()
+        viewState.loadingLayoutIsVisible(false)
     }
 
     /**переход на экран с инфо о репозитории c помощью router.navigateTo
