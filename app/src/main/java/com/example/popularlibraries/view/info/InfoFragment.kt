@@ -11,7 +11,6 @@ import com.example.popularlibraries.R
 import com.example.popularlibraries.databinding.FragmentInfoBinding
 import com.example.popularlibraries.model.entity.GitHubUserRepoInfoEntity
 import com.example.popularlibraries.model.repository.GitHubUserRepositoryFactory
-import com.example.popularlibraries.presenter.InfoPresenter
 import com.example.popularlibraries.scheduler.SchedulersFactory
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter

@@ -1,10 +1,9 @@
-package com.example.popularlibraries.presenter
+package com.example.popularlibraries.view.users
 
 import com.example.popularlibraries.model.datasource.GithubUser
 import com.example.popularlibraries.model.repository.GithubUsersRepository
 import com.example.popularlibraries.navigation.DetailScreen
 import com.example.popularlibraries.scheduler.Schedulers
-import com.example.popularlibraries.view.users.UsersView
 import com.github.terrakok.cicerone.Router
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import moxy.MvpPresenter

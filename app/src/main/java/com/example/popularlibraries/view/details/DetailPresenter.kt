@@ -1,11 +1,10 @@
-package com.example.popularlibraries.presenter
+package com.example.popularlibraries.view.details
 
 import com.example.popularlibraries.model.entity.GitHubUserEntity
 import com.example.popularlibraries.model.entity.GitHubUserRepoEntity
 import com.example.popularlibraries.model.repository.GithubUsersRepository
 import com.example.popularlibraries.navigation.InfoScreen
 import com.example.popularlibraries.scheduler.Schedulers
-import com.example.popularlibraries.view.details.DetailsView
 import com.github.terrakok.cicerone.Router
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.plusAssign

@@ -1,6 +1,7 @@
 package com.example.popularlibraries
 
 import android.app.Application
+import android.content.Context
 import com.github.terrakok.cicerone.Cicerone
 import com.github.terrakok.cicerone.Router
 
@@ -8,6 +9,15 @@ import com.github.terrakok.cicerone.Router
 //проект, создаём класс App, наследуем от Application и инициализируем в нём Cicerone, произведя
 //соответствующие изменения в манифесте:
 class App : Application() {
+
+    /**
+     * так делать нельзя
+     * Оставим до Dagger
+     * нам нужен контекст для CacheUserDataSourceFactory
+     */
+    object ContextHolder {
+        lateinit var context: Context
+    }
 
     companion object {
         lateinit var instance: App
@@ -25,5 +35,6 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this@App
+        ContextHolder.context = applicationContext
     }
 }
