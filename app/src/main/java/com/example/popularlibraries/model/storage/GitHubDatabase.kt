@@ -14,7 +14,7 @@ import com.example.popularlibraries.model.datasource.GithubUser
 //Выполнить любую дополнительную настройку, например предварительное заполнение базы данных.
 //Установите exportSchema значение false, чтобы не сохранять резервные копии истории версий схемы.
  */
-@Database(entities = [GithubUser::class], version = 1, exportSchema = false)
+@Database(entities = [GithubUser::class], version = 2, exportSchema = false)
 abstract class GitHubDatabase : RoomDatabase() {
 
     abstract fun gitHubUserDao(): GitHubUserDao

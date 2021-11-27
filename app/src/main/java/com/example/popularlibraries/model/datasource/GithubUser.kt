@@ -17,5 +17,7 @@ data class GithubUser(
     @ColumnInfo(name = "avatar")
     @SerializedName("avatar_url") val avatarUrl: String,
     @ColumnInfo(name = "repos")
-    @SerializedName("repos_url") val reposUrl: String
+    @SerializedName("repos_url") val reposUrl: String,
+    @ColumnInfo(name = "migrate")
+    val migrate: String?
 )

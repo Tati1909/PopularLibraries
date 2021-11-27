@@ -2,6 +2,7 @@ package com.example.popularlibraries.model.storage
 
 import android.content.Context
 import androidx.room.Room
+import com.example.popularlibraries.model.storage.migration.GitHub1to2Migration
 
 object GitHubDatabaseFactory {
 
@@ -13,8 +14,8 @@ object GitHubDatabaseFactory {
             GitHubDatabase::class.java,
             "github.db"
         )
-            //Миграция выходит за рамки этой лаборатории. Простое решение -
-            // уничтожить и восстановить базу данных, что означает потерю данных.
-            .fallbackToDestructiveMigration()
+            .addMigrations(
+                GitHub1to2Migration
+            )
             .build()
 }
