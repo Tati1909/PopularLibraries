@@ -11,8 +11,9 @@ object GitHubUserRepositoryFactory {
     private val gitHubUsersRepository: GithubUsersRepository =
         GithubUsersRepository(
             UserDataSourceFactory.create(),
-            CacheUserDataSourceFactory.create()
-        )
+            CacheUserDataSourceFactory.create(),
+
+            )
 
     fun create(): GithubUsersRepository = gitHubUsersRepository
 }

@@ -6,8 +6,6 @@ import io.reactivex.rxjava3.core.Single
 
 class CacheUserDataSource(private val gitHubStorage: GitHubDatabase) {
 
-    private val cache = mutableListOf<GithubUser>()
-
     /**получаем список пользователей
      */
     fun getUsers(): Single<List<GithubUser>> {

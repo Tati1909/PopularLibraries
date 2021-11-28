@@ -1,11 +1,15 @@
 package com.example.popularlibraries.view.main
 
 import android.os.Bundle
+import android.widget.Toast
 import com.example.popularlibraries.App
 import com.example.popularlibraries.R
 import com.example.popularlibraries.databinding.ActivityMainBinding
 import com.example.popularlibraries.navigation.BackButtonListener
+import com.example.popularlibraries.networkstatus.NetworkStateObservable
 import com.github.terrakok.cicerone.androidx.AppNavigator
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.kotlin.plusAssign
 import moxy.MvpAppCompatActivity
 import moxy.ktx.moxyPresenter
 
@@ -42,10 +46,27 @@ class MainActivity : MvpAppCompatActivity(), MainView {
 
     private var binding: ActivityMainBinding? = null
 
+    private val disposables = CompositeDisposable()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding?.root)
+
+        /**
+         * Подписываемя на слушателя наличия сети:
+         * NetworkState: CONNECTED
+         * NetworkState: DISCONNECTED
+         */
+        disposables +=
+            NetworkStateObservable(this)
+                .subscribe { networkState ->
+                    Toast.makeText(
+                        this,
+                        "NetworkState: $networkState",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
 
     }
 
@@ -67,5 +88,11 @@ class MainActivity : MvpAppCompatActivity(), MainView {
             }
         }
         presenter.backClicked()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        disposables.dispose()
     }
 }
