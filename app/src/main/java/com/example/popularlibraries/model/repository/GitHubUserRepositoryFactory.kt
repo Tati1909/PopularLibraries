@@ -8,12 +8,12 @@ import com.example.popularlibraries.model.storage.CacheUserDataSourceFactory
  */
 object GitHubUserRepositoryFactory {
 
-    private val gitHubUsersRepository: GithubUsersRepository =
+    private val gitHubUsersRepository: GithubUsersRepository by lazy {
         GithubUsersRepository(
             UserDataSourceFactory.create(),
-            CacheUserDataSourceFactory.create(),
-
-            )
+            CacheUserDataSourceFactory.create()
+        )
+    }
 
     fun create(): GithubUsersRepository = gitHubUsersRepository
 }

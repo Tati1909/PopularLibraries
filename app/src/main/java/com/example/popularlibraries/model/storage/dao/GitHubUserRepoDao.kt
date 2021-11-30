@@ -1,22 +1,20 @@
-package com.example.popularlibraries.model.storage
+package com.example.popularlibraries.model.storage.dao
 
-import androidx.room.*
+import androidx.room.Dao
+import androidx.room.Insert
 import androidx.room.OnConflictStrategy.REPLACE
-import com.example.popularlibraries.model.datasource.GithubUser
+import androidx.room.Query
+import androidx.room.Update
+import com.example.popularlibraries.model.datasource.GitHubUserRepo
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Maybe
-import io.reactivex.rxjava3.core.Single
 
 @Dao
-interface GitHubUserDao {
+interface GitHubUserRepoDao {
 
-    //Запрос SQLite возвращает все столбцы из github_users таблицы
-    @Query("SELECT * from github_users")
-    fun getUsers(): Single<List<GithubUser>>
-
-    //SQLite для извлечения определенного элемента из таблицы элементов на основе заданного логина
-    @Query("SELECT * from github_users WHERE login LIKE :login LIMIT 1")
-    fun getUserByLogin(login: String): Maybe<GithubUser>
+    //получаем список репозиториев
+    @Query("SELECT * from github_user_repo  WHERE repos_url = :repositoriesUrl")
+    fun getUserRepositories(repositoriesUrl: String): Maybe<List<GitHubUserRepo>>
 
     /**Выполнение операций с базой данных может занять много времени, поэтому они должны выполняться в отдельном потоке.
     Аргумент OnConflict говорит Room, что делать в случае конфликта. OnConflictStrategy.IGNORE игнорирует новый item ,
@@ -24,11 +22,8 @@ interface GitHubUserDao {
 
     Когда вы вызываете insert()из своего кода Kotlin, Room выполняет SQL-запрос для вставки объекта(item) в базу данных.*/
     @Insert(onConflict = REPLACE)
-    fun insert(users: List<GithubUser>): Completable
+    fun insert(users: List<GitHubUserRepo>): Completable
 
     @Update(onConflict = REPLACE)
-    fun update(user: GithubUser): Completable
-
-    @Delete
-    fun delete(user: GithubUser)
+    fun update(user: GitHubUserRepo): Completable
 }
