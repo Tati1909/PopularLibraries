@@ -4,41 +4,62 @@ import com.example.popularlibraries.model.cloud.CloudUserDataSource
 import com.example.popularlibraries.model.datasource.GitHubUserRepo
 import com.example.popularlibraries.model.datasource.GitHubUserRepoInfo
 import com.example.popularlibraries.model.datasource.GithubUser
-import io.reactivex.rxjava3.core.Maybe
-import io.reactivex.rxjava3.core.Single
+import com.example.popularlibraries.model.storage.CacheUserDataSource
+import io.reactivex.rxjava3.core.Observable
 
 class GithubUsersRepository(
-    private val cloud: CloudUserDataSource
+    private val cloud: CloudUserDataSource,
+    private val cache: CacheUserDataSource
 ) {
 
-    //получаем список пользователей
-    fun getUsers(): Single<List<GithubUser>> {
-        return cloud.getUsers()
-    }
-
-    //получаем пользователя по Id
-    //firstOrNull возвращает элемент списка, соответствующий заданному предикату, или null, если элемент не был найден.
-    fun getUserByLogin(userId: String): Maybe<GithubUser> {
-        return cloud.getUsers()
-            .flatMapMaybe { users: List<GithubUser> ->
-                users
-                    .firstOrNull { user: GithubUser -> user.login == userId }
-                    ?.let { user -> Maybe.just(user) }
-                    ?: Maybe.empty()
-                /**
-                или вернет пользователя(если не null)
-                или вернет пустоту(если null)
-                flatMapMaybe переводит Single в Maybe
-                 */
+    /**
+     * получаем список пользователей
+     * merge сразу подписывается на 2 источника
+     */
+    fun getUsers(): Observable<List<GithubUser>> {
+        return Observable.merge(
+            cache.getUsers().toObservable(),
+            cloud.getUsers().flatMap { listGithubUser ->
+                cache.insertListUsers(listGithubUser)
             }
+                .toObservable()
+        )
     }
 
-    //получаем список репозиториев
-    fun getUserRepositories(repositoriesUrl: String): Maybe<List<GitHubUserRepo>> =
-        cloud.getUserRepositories(repositoriesUrl)
+    /**получаем пользователя в DetailsFragment по его логину
+    Если наш кеш не пустой, то сначала берем из него данные
+     */
+    fun getUserByLogin(login: String): Observable<GithubUser> =
+        Observable.merge(
+            cache.getUserByLogin(login).toObservable(),
+            cloud.getUserByLogin(login).flatMap { githubUser ->
+                cache.insertUser(githubUser).toMaybe()
+            }
+                .toObservable()
+        )
 
-    //получаем информацию о репозитории пользователя
-    fun getUserRepositoryInfo(repositoryUrl: String): Maybe<GitHubUserRepoInfo> =
-        cloud.getUserRepositoryInfo(repositoryUrl)
-    //.flatMap { gitHubUserRepoInfo -> gitHubUserCache.retain(repositoryUrl, gitHubUserRepoInfo).toMaybe() }
+    /**
+     * получаем список репозиториев в DetailsFragment
+     */
+    fun getUserRepositories(repositoriesUrl: String): Observable<List<GitHubUserRepo>> =
+        Observable.merge(
+            cache.getUserRepositories(repositoriesUrl).toObservable(),
+            cloud.getUserRepositories(repositoriesUrl).flatMap { listGitHubUserRepo ->
+                cache.insertRepositories(repositoriesUrl, listGitHubUserRepo).toMaybe()
+            }
+                .toObservable()
+        )
+
+    /**
+     * получаем информацию о репозитории пользователя в InfoFragment
+     */
+    fun getUserRepositoryInfo(repositoryUrl: String): Observable<GitHubUserRepoInfo> =
+        Observable.merge(
+            cache.getUserRepositoryInfo(repositoryUrl).toObservable(),
+            cloud.getUserRepositoryInfo(repositoryUrl).toObservable()
+                .flatMap { githubUserRepoInfo ->
+                    cache.insertUserRepoInfo(repositoryUrl, githubUserRepoInfo)
+                        .toObservable()
+                }
+        )
 }

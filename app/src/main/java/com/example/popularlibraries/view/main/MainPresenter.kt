@@ -1,7 +1,6 @@
-package com.example.popularlibraries.presenter
+package com.example.popularlibraries.view.main
 
 import com.example.popularlibraries.navigation.UsersScreen
-import com.example.popularlibraries.view.main.MainView
 import com.github.terrakok.cicerone.Router
 import moxy.MvpPresenter
 

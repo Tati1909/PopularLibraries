@@ -1,9 +1,8 @@
-package com.example.popularlibraries.presenter
+package com.example.popularlibraries.view.info
 
 import com.example.popularlibraries.model.entity.GitHubUserRepoInfoEntity
 import com.example.popularlibraries.model.repository.GithubUsersRepository
 import com.example.popularlibraries.scheduler.Schedulers
-import com.example.popularlibraries.view.info.InfoView
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.plusAssign
 import moxy.MvpPresenter

@@ -12,7 +12,6 @@ import com.example.popularlibraries.databinding.FragmentUsersBinding
 import com.example.popularlibraries.model.datasource.GithubUser
 import com.example.popularlibraries.model.repository.GitHubUserRepositoryFactory
 import com.example.popularlibraries.navigation.BackButtonListener
-import com.example.popularlibraries.presenter.UsersPresenter
 import com.example.popularlibraries.scheduler.SchedulersFactory
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter

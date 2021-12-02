@@ -14,7 +14,6 @@ import com.example.popularlibraries.databinding.FragmentDetailsBinding
 import com.example.popularlibraries.model.entity.GitHubUserEntity
 import com.example.popularlibraries.model.entity.GitHubUserRepoEntity
 import com.example.popularlibraries.model.repository.GitHubUserRepositoryFactory
-import com.example.popularlibraries.presenter.DetailPresenter
 import com.example.popularlibraries.scheduler.SchedulersFactory
 import com.example.popularlibraries.view.setStartDrawableCircleImageFromUri
 import moxy.MvpAppCompatFragment
