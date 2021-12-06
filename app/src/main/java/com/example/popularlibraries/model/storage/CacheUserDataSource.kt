@@ -6,72 +6,36 @@ import com.example.popularlibraries.model.datasource.GithubUser
 import io.reactivex.rxjava3.core.Maybe
 import io.reactivex.rxjava3.core.Single
 
-class CacheUserDataSource(private val gitHubStorage: GitHubDatabase) {
+interface CacheUserDataSource {
 
     /**получаем список пользователей
      */
-    fun getUsers(): Single<List<GithubUser>> {
-        return gitHubStorage
-            .gitHubUserDao()
-            .getUsers()
-    }
+    fun getUsers(): Single<List<GithubUser>>
 
     /**получаем пользователя по логину
     firstOrNull возвращает или элемент списка, соответствующий заданному предикату,
     или null, если элемент не был найден.
      */
-    fun getUserByLogin(login: String): Maybe<GithubUser> {
-        return gitHubStorage
-            .gitHubUserDao()
-            .getUserByLogin(login)
-    }
+    fun getUserByLogin(login: String): Maybe<GithubUser>
 
-    fun getUserRepositories(repositoriesUrl: String): Maybe<List<GitHubUserRepo>> =
-        gitHubStorage
-            .gitHubUserRepoDao()
-            .getUserRepositories(repositoriesUrl)
+    fun getUserRepositories(repositoriesUrl: String): Maybe<List<GitHubUserRepo>>
 
-    fun getUserRepositoryInfo(repositoryUrl: String): Maybe<GitHubUserRepoInfo> =
-        gitHubStorage
-            .gitHubUserRepoInfoDao()
-            .getUserRepositoryInfo(repositoryUrl)
+    fun getUserRepositoryInfo(repositoryUrl: String): Maybe<GitHubUserRepoInfo>
 
     /**
      * Обновить
      */
-    fun update(user: GithubUser): Single<GithubUser> {
-
-        return gitHubStorage
-            .gitHubUserDao()
-            .update(user)
-            .andThen(
-                getUserByLogin(user.login)
-                    .toSingle()
-            )
-    }
+    fun update(user: GithubUser): Single<GithubUser>
 
     /**
      * Вставить список пользователей в таблицу github_users
      */
-    fun insertListUsers(users: List<GithubUser>): Single<List<GithubUser>> {
-
-        return gitHubStorage
-            .gitHubUserDao()
-            .insertUsers(users)
-            .andThen(getUsers())
-    }
+    fun insertListUsers(users: List<GithubUser>): Single<List<GithubUser>>
 
     /**
      * Вставить данные 1 пользователя в таблицу github_users_repo
      */
-    fun insertUser(user: GithubUser): Single<GithubUser> {
-
-        return gitHubStorage
-            .gitHubUserDao()
-            .insertUser(user)
-            .andThen(getUserByLogin(user.login))
-            .toSingle()
-    }
+    fun insertUser(user: GithubUser): Single<GithubUser>
 
     /**
      * Вставить репозитории 1 пользователя в таблицу github_users_repo
@@ -79,30 +43,12 @@ class CacheUserDataSource(private val gitHubStorage: GitHubDatabase) {
     fun insertRepositories(
         repositoriesUrl: String,
         userRepositories: List<GitHubUserRepo>
-    ): Single<List<GitHubUserRepo>> {
-        return userRepositories
-            .map { gitHubUseRepo -> gitHubUseRepo.apply { reposUrl = repositoriesUrl } }
-            .let { gitHubUsers ->
-                gitHubStorage
-                    .gitHubUserRepoDao()
-                    .insert(gitHubUsers)
-            }
-            .andThen(getUserRepositories(repositoriesUrl))
-            .toSingle()
-    }
+    ): Single<List<GitHubUserRepo>>
 
     /**
      * Вставить инфо о репозитории 1 пользователя в таблицу github_users_repo_info
      */
     fun insertUserRepoInfo(
         repositoryUrl: String, gitHubUserRepoInfo: GitHubUserRepoInfo
-    ): Single<GitHubUserRepoInfo> {
-
-        gitHubUserRepoInfo.repoUrl = repositoryUrl
-        return gitHubStorage
-            .gitHubUserRepoInfoDao()
-            .insert(gitHubUserRepoInfo)
-            .andThen(getUserRepositoryInfo(repositoryUrl))
-            .toSingle()
-    }
+    ): Single<GitHubUserRepoInfo>
 }
