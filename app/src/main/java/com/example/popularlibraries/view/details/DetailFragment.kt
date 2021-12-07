@@ -8,18 +8,20 @@ import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.popularlibraries.App
 import com.example.popularlibraries.R
 import com.example.popularlibraries.databinding.FragmentDetailsBinding
 import com.example.popularlibraries.model.entity.GitHubUserEntity
 import com.example.popularlibraries.model.entity.GitHubUserRepoEntity
-import com.example.popularlibraries.model.repository.GitHubUserRepositoryFactory
-import com.example.popularlibraries.scheduler.SchedulersFactory
+import com.example.popularlibraries.model.repository.GithubUsersRepository
+import com.example.popularlibraries.scheduler.Schedulers
+import com.example.popularlibraries.view.inject.DaggerMvpFragment
 import com.example.popularlibraries.view.setStartDrawableCircleImageFromUri
-import moxy.MvpAppCompatFragment
+import com.github.terrakok.cicerone.Router
 import moxy.ktx.moxyPresenter
+import javax.inject.Inject
 
-class DetailFragment : MvpAppCompatFragment(), DetailsView, UserReposAdapter.Delegate {
+class DetailFragment : DaggerMvpFragment(R.layout.fragment_details), DetailsView,
+    UserReposAdapter.Delegate {
 
     companion object {
 
@@ -36,18 +38,27 @@ class DetailFragment : MvpAppCompatFragment(), DetailsView, UserReposAdapter.Del
         }
     }
 
+    @Inject
+    lateinit var schedulers: Schedulers
+
+    @Inject
+    lateinit var router: Router
+
+    @Inject
+    lateinit var gitHubUserRepository: GithubUsersRepository
+
     //получаем наш аргумент
     private val userLogin: String by lazy {
         arguments?.getString(ARG_USER).orEmpty()
     }
 
     //передаем наш логин из bundle презентеру
-    val presenter: DetailPresenter by moxyPresenter {
+    private val presenter: DetailPresenter by moxyPresenter {
         DetailPresenter(
             userLogin = userLogin,
-            gitHubRepo = GitHubUserRepositoryFactory.create(),
-            schedulers = SchedulersFactory.create(),
-            router = App.instance.router
+            gitHubRepo = gitHubUserRepository,
+            schedulers = schedulers,
+            router = router
         )
     }
 

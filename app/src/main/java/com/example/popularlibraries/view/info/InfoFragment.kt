@@ -10,12 +10,13 @@ import androidx.fragment.app.Fragment
 import com.example.popularlibraries.R
 import com.example.popularlibraries.databinding.FragmentInfoBinding
 import com.example.popularlibraries.model.entity.GitHubUserRepoInfoEntity
-import com.example.popularlibraries.model.repository.GitHubUserRepositoryFactory
-import com.example.popularlibraries.scheduler.SchedulersFactory
-import moxy.MvpAppCompatFragment
+import com.example.popularlibraries.model.repository.GithubUsersRepository
+import com.example.popularlibraries.scheduler.Schedulers
+import com.example.popularlibraries.view.inject.DaggerMvpFragment
 import moxy.ktx.moxyPresenter
+import javax.inject.Inject
 
-class InfoFragment : MvpAppCompatFragment(), InfoView {
+class InfoFragment : DaggerMvpFragment(R.layout.fragment_info), InfoView {
 
     companion object {
 
@@ -32,20 +33,26 @@ class InfoFragment : MvpAppCompatFragment(), InfoView {
         }
     }
 
+    @Inject
+    lateinit var schedulers: Schedulers
+
+    @Inject
+    lateinit var userRepository: GithubUsersRepository
+
     private var _binding: FragmentInfoBinding? = null
     private val binding get() = _binding!!
 
     //получаем наш аргумент
-    private val gitHubUsersRepository: String by lazy {
+    private val repositoryUrl: String by lazy {
         arguments?.getString(ARG_REPO_URL).orEmpty()
     }
 
     //передаем наш логин из bundle презентеру
     val presenter: InfoPresenter by moxyPresenter {
         InfoPresenter(
-            gitHubUsersRepository = GitHubUserRepositoryFactory.create(),
-            repositoryUrl = gitHubUsersRepository,
-            schedulers = SchedulersFactory.create()
+            gitHubUsersRepository = userRepository,
+            repositoryUrl = repositoryUrl,
+            schedulers = schedulers
         )
     }
 

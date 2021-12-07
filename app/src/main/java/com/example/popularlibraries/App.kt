@@ -1,40 +1,40 @@
 package com.example.popularlibraries
 
-import android.app.Application
-import android.content.Context
+import com.example.popularlibraries.model.di.DaggerApplicationComponent
+import com.example.popularlibraries.scheduler.DefaultSchedulers
 import com.github.terrakok.cicerone.Cicerone
-import com.github.terrakok.cicerone.Router
+import dagger.android.AndroidInjector
+import dagger.android.DaggerApplication
 
-//Для Cicerone нам нужно сделать приложение single-Activity. Подключаем Cicerone в
-//проект, создаём класс App, наследуем от Application и инициализируем в нём Cicerone, произведя
-//соответствующие изменения в манифесте:
-class App : Application() {
 
-    /**
-     * так делать нельзя
-     * Оставим до Dagger
-     * нам нужен контекст для CacheUserDataSourceFactory
-     */
-    object ContextHolder {
-        lateinit var context: Context
-    }
+/** Для Cicerone нам нужно сделать приложение single-Activity. Подключаем Cicerone в
+ * проект, создаём класс App, наследуем от Application(с Dagger используем DaggerApplication)
+ * и инициализируем в нём Cicerone, произведя соответствующие изменения в манифесте*/
+class App : DaggerApplication() {
 
     companion object {
         lateinit var instance: App
     }
 
-    //Временно до даггера положим это тут
-    private val cicerone: Cicerone<Router> by lazy {
-        Cicerone.create()
-    }
-
-    //navigatorHolder настраивается в MainActivity
-    val navigatorHolder get() = cicerone.getNavigatorHolder()
-    val router get() = cicerone.router
-
     override fun onCreate() {
         super.onCreate()
         instance = this@App
-        ContextHolder.context = applicationContext
     }
+
+    /**
+     * Dagger скомпилировал нам наш компонент Dagger+ApplicationComponent,
+     * который создает граф зависимостей(cicerone, router, schedulers).
+     */
+    override fun applicationInjector(): AndroidInjector<App> =
+        DaggerApplicationComponent
+            .builder()
+            .withContext(applicationContext)
+            .apply {
+                val cicerone = Cicerone.create()
+                //navigatorHolder настраивается в MainActivity
+                withNavigatorHolder(cicerone.getNavigatorHolder())
+                withRouter(cicerone.router)
+                withSchedulers(DefaultSchedulers())
+            }
+            .build()
 }

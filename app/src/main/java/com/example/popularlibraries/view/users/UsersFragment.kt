@@ -7,31 +7,43 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.popularlibraries.App
+import com.example.popularlibraries.R
 import com.example.popularlibraries.databinding.FragmentUsersBinding
 import com.example.popularlibraries.model.datasource.GithubUser
-import com.example.popularlibraries.model.repository.GitHubUserRepositoryFactory
+import com.example.popularlibraries.model.repository.GithubUsersRepository
 import com.example.popularlibraries.navigation.BackButtonListener
-import com.example.popularlibraries.scheduler.SchedulersFactory
-import moxy.MvpAppCompatFragment
+import com.example.popularlibraries.scheduler.Schedulers
+import com.example.popularlibraries.view.inject.DaggerMvpFragment
+import com.github.terrakok.cicerone.Router
 import moxy.ktx.moxyPresenter
+import javax.inject.Inject
 
-class UsersFragment : MvpAppCompatFragment(), UsersView, UsersRVAdapter.Delegate,
+class UsersFragment : DaggerMvpFragment(R.layout.fragment_users), UsersView,
+    UsersRVAdapter.Delegate,
     BackButtonListener {
 
     companion object {
         fun newInstance(): Fragment = UsersFragment().apply { arguments }
     }
 
-    ////объявляем Presenter и делегируем его создание и хранение
-    //через делегат moxyPresenter.
-    //moxyPresenter создает новый экземпляр MoxyKtxDelegate.
-    //Делегат подключается к жизненному циклу фрагмента
-    val presenter: UsersPresenter by moxyPresenter {
+    @Inject
+    lateinit var router: Router
+
+    @Inject
+    lateinit var schedulers: Schedulers
+
+    @Inject
+    lateinit var gitHubUserRepository: GithubUsersRepository
+
+    /** объявляем Presenter и делегируем его создание и хранение
+    через делегат moxyPresenter.
+    moxyPresenter создает новый экземпляр MoxyKtxDelegate.
+    Делегат подключается к жизненному циклу фрагмента */
+    private val presenter: UsersPresenter by moxyPresenter {
         UsersPresenter(
-            schedulers = SchedulersFactory.create(),
-            model = GitHubUserRepositoryFactory.create(),
-            router = App.instance.router
+            schedulers = schedulers,
+            model = gitHubUserRepository,
+            router = router
         )
     }
 
