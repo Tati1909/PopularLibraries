@@ -12,11 +12,8 @@ import com.example.popularlibraries.R
 import com.example.popularlibraries.databinding.FragmentDetailsBinding
 import com.example.popularlibraries.model.entity.GitHubUserEntity
 import com.example.popularlibraries.model.entity.GitHubUserRepoEntity
-import com.example.popularlibraries.model.repository.GithubUsersRepository
-import com.example.popularlibraries.scheduler.Schedulers
 import com.example.popularlibraries.view.inject.DaggerMvpFragment
 import com.example.popularlibraries.view.setStartDrawableCircleImageFromUri
-import com.github.terrakok.cicerone.Router
 import moxy.ktx.moxyPresenter
 import javax.inject.Inject
 
@@ -30,36 +27,29 @@ class DetailFragment : DaggerMvpFragment(R.layout.fragment_details), DetailsView
 
         //newInstance вызываем в DetailScreen и передаем в аргумент login из модели
         //а DetailScreen создаем в UsersPresenter в методе displayUser
-        fun newInstance(userId: String): Fragment {
+        fun newInstance(userLogin: String): Fragment {
             return DetailFragment().apply {
-                arguments = bundleOf(ARG_USER to userId)
+                arguments = bundleOf(ARG_USER to userLogin)
                 //to - создает кортеж типа Pair из ARG_USER и userId
             }
         }
     }
 
     @Inject
-    lateinit var schedulers: Schedulers
+    lateinit var presenterFactory: DetailPresenterFactory
 
-    @Inject
-    lateinit var router: Router
-
-    @Inject
-    lateinit var gitHubUserRepository: GithubUsersRepository
-
-    //получаем наш аргумент
+    /**
+     * Получаем наш аргумент
+     */
     private val userLogin: String by lazy {
         arguments?.getString(ARG_USER).orEmpty()
     }
 
-    //передаем наш логин из bundle презентеру
+    /**
+     * userLogin - передаем наш логин из bundle презентеру.
+     */
     private val presenter: DetailPresenter by moxyPresenter {
-        DetailPresenter(
-            userLogin = userLogin,
-            gitHubRepo = gitHubUserRepository,
-            schedulers = schedulers,
-            router = router
-        )
+        presenterFactory.create(userLogin)
     }
 
     private var _binding: FragmentDetailsBinding? = null

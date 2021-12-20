@@ -6,6 +6,7 @@ import com.example.popularlibraries.model.repository.GithubUsersRepository
 import com.example.popularlibraries.model.repository.GithubUsersRepositoryImpl
 import com.example.popularlibraries.model.storage.CacheUserDataSource
 import com.example.popularlibraries.model.storage.CacheUserDataSourceImpl
+import com.example.popularlibraries.view.users.UsersPresenter
 import dagger.Binds
 import dagger.Module
 import javax.inject.Singleton
@@ -33,4 +34,8 @@ interface UsersModule {
     @Singleton
     @Binds
     fun bindCacheDataSource(dataSource: CacheUserDataSourceImpl): CacheUserDataSource
+
+    @Singleton
+    @Binds
+    fun bindUsersPresenter(usersPresenter: UsersPresenter): UsersPresenter
 }

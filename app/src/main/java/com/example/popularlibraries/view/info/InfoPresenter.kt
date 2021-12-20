@@ -3,13 +3,15 @@ package com.example.popularlibraries.view.info
 import com.example.popularlibraries.model.entity.GitHubUserRepoInfoEntity
 import com.example.popularlibraries.model.repository.GithubUsersRepository
 import com.example.popularlibraries.scheduler.Schedulers
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.plusAssign
 import moxy.MvpPresenter
 
-class InfoPresenter(
+class InfoPresenter @AssistedInject constructor(
     private val gitHubUsersRepository: GithubUsersRepository,
-    private val repositoryUrl: String?,
+    @Assisted private val repositoryUrl: String?,
     private val schedulers: Schedulers,
 ) : MvpPresenter<InfoView>() {
     private val disposables = CompositeDisposable()

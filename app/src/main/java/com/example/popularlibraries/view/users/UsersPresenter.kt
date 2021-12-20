@@ -7,6 +7,7 @@ import com.example.popularlibraries.scheduler.Schedulers
 import com.github.terrakok.cicerone.Router
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import moxy.MvpPresenter
+import javax.inject.Inject
 
 //Router необходим для навигации.
 //В MvpPresenter есть экземпляр класса ViewState, который реализует тот тип View, которым
@@ -15,7 +16,7 @@ import moxy.MvpPresenter
 //● получаем данные из репозитория;
 //● при первом присоединении View вызываем метод init(), в котором напишем все операции по
 //инициализации View;
-class UsersPresenter(
+class UsersPresenter @Inject constructor(
     //Schedulers - наш интерфейс
     private val schedulers: Schedulers,
     private val model: GithubUsersRepository,
@@ -51,7 +52,7 @@ class UsersPresenter(
 
     /**переход на экран пользователя c помощью router.navigateTo
     //при нажатии на элемент создаем объект DetailScreen и вызываем метод create,
-    //который в свою очередь создает Detailfragment и ложит имя пользователя в корзину
+    //который в свою очередь создает Detailfragment и ложит логин пользователя в корзину
      */
     fun displayUser(user: GithubUser) =
         router.navigateTo(DetailScreen(user).create())

@@ -10,8 +10,6 @@ import androidx.fragment.app.Fragment
 import com.example.popularlibraries.R
 import com.example.popularlibraries.databinding.FragmentInfoBinding
 import com.example.popularlibraries.model.entity.GitHubUserRepoInfoEntity
-import com.example.popularlibraries.model.repository.GithubUsersRepository
-import com.example.popularlibraries.scheduler.Schedulers
 import com.example.popularlibraries.view.inject.DaggerMvpFragment
 import moxy.ktx.moxyPresenter
 import javax.inject.Inject
@@ -34,10 +32,7 @@ class InfoFragment : DaggerMvpFragment(R.layout.fragment_info), InfoView {
     }
 
     @Inject
-    lateinit var schedulers: Schedulers
-
-    @Inject
-    lateinit var userRepository: GithubUsersRepository
+    lateinit var presenterFactory: InfoPresenterFactory
 
     private var _binding: FragmentInfoBinding? = null
     private val binding get() = _binding!!
@@ -47,13 +42,11 @@ class InfoFragment : DaggerMvpFragment(R.layout.fragment_info), InfoView {
         arguments?.getString(ARG_REPO_URL).orEmpty()
     }
 
-    //передаем наш логин из bundle презентеру
-    val presenter: InfoPresenter by moxyPresenter {
-        InfoPresenter(
-            gitHubUsersRepository = userRepository,
-            repositoryUrl = repositoryUrl,
-            schedulers = schedulers
-        )
+    /**
+     * repositoryUrl - передаем ссылку на репозиторий из bundle презентеру.
+     */
+    private val presenter: InfoPresenter by moxyPresenter {
+        presenterFactory.create(repositoryUrl)
     }
 
     override fun onCreateView(
