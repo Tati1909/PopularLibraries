@@ -1,5 +1,6 @@
 package com.example.popularlibraries.view.info
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,16 +8,18 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import com.example.popularlibraries.App
 import com.example.popularlibraries.R
 import com.example.popularlibraries.databinding.FragmentInfoBinding
+import com.example.popularlibraries.model.di.components.InfoComponent
 import com.example.popularlibraries.model.entity.GitHubUserRepoInfoEntity
 import com.example.popularlibraries.model.repository.GithubUsersRepository
 import com.example.popularlibraries.scheduler.Schedulers
-import com.example.popularlibraries.view.inject.DaggerMvpFragment
+import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 import javax.inject.Inject
 
-class InfoFragment : DaggerMvpFragment(R.layout.fragment_info), InfoView {
+class InfoFragment : MvpAppCompatFragment(R.layout.fragment_info), InfoView {
 
     companion object {
 
@@ -39,6 +42,8 @@ class InfoFragment : DaggerMvpFragment(R.layout.fragment_info), InfoView {
     @Inject
     lateinit var userRepository: GithubUsersRepository
 
+    private var infoComponent: InfoComponent? = null
+
     private var _binding: FragmentInfoBinding? = null
     private val binding get() = _binding!!
 
@@ -47,13 +52,26 @@ class InfoFragment : DaggerMvpFragment(R.layout.fragment_info), InfoView {
         arguments?.getString(ARG_REPO_URL).orEmpty()
     }
 
-    //передаем наш логин из bundle презентеру
+    /**
+     * repositoryUrl - передаем ссылку на репозиторий из bundle презентеру.
+     */
     val presenter: InfoPresenter by moxyPresenter {
         InfoPresenter(
             gitHubUsersRepository = userRepository,
             repositoryUrl = repositoryUrl,
             schedulers = schedulers
         )
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        infoComponent =
+            (requireActivity().application as? App)
+                ?.applicationComponent
+                ?.gitHubInfoComponent()
+                ?.build()
+                ?.also { it.inject(this) }
     }
 
     override fun onCreateView(
@@ -99,6 +117,11 @@ class InfoFragment : DaggerMvpFragment(R.layout.fragment_info), InfoView {
             Toast.LENGTH_LONG
         ).show()
         loadingLayoutIsVisible(false)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        infoComponent = null
     }
 
 }

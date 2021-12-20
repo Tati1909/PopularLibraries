@@ -1,6 +1,7 @@
 package com.example.popularlibraries
 
-import com.example.popularlibraries.model.di.DaggerApplicationComponent
+import com.example.popularlibraries.model.di.components.ApplicationComponent
+import com.example.popularlibraries.model.di.components.DaggerApplicationComponent
 import com.example.popularlibraries.scheduler.DefaultSchedulers
 import com.github.terrakok.cicerone.Cicerone
 import dagger.android.AndroidInjector
@@ -26,6 +27,9 @@ class App : DaggerApplication() {
      * который создает граф зависимостей(cicerone, router, schedulers).
      */
     override fun applicationInjector(): AndroidInjector<App> =
+        applicationComponent
+
+    val applicationComponent: ApplicationComponent by lazy {
         DaggerApplicationComponent
             .builder()
             .withContext(applicationContext)
@@ -37,4 +41,5 @@ class App : DaggerApplication() {
                 withSchedulers(DefaultSchedulers())
             }
             .build()
+    }
 }

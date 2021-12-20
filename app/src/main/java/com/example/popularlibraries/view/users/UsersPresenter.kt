@@ -51,7 +51,7 @@ class UsersPresenter(
 
     /**переход на экран пользователя c помощью router.navigateTo
     //при нажатии на элемент создаем объект DetailScreen и вызываем метод create,
-    //который в свою очередь создает Detailfragment и ложит имя пользователя в корзину
+    //который в свою очередь создает Detailfragment и ложит логин пользователя в корзину
      */
     fun displayUser(user: GithubUser) =
         router.navigateTo(DetailScreen(user).create())

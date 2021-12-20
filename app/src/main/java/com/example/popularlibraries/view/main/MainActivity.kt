@@ -40,22 +40,22 @@ class MainActivity : DaggerMvpActivity(R.layout.activity_main), MainView {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
-    super.onCreate(savedInstanceState)
+        super.onCreate(savedInstanceState)
 
-    /**
-     * Подписываемя на слушателя наличия сети:
-     * NetworkState: CONNECTED
-     * NetworkState: DISCONNECTED
-    */
-    disposables +=
-    NetworkStateObservable(this)
-    .subscribe { networkState ->
-    Toast.makeText(
-    this,
-    "NetworkState: $networkState",
-    Toast.LENGTH_SHORT
-    ).show()
-    }
+        /**
+         * Подписываемя на слушателя наличия сети:
+         * NetworkState: CONNECTED
+         * NetworkState: DISCONNECTED
+         */
+        disposables +=
+            NetworkStateObservable(this)
+                .subscribe { networkState ->
+                    Toast.makeText(
+                        this,
+                        "NetworkState: $networkState",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
 
     }
 

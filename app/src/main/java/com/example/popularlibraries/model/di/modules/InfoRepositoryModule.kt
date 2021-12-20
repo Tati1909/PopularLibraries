@@ -8,29 +8,28 @@ import com.example.popularlibraries.model.storage.CacheUserDataSource
 import com.example.popularlibraries.model.storage.CacheUserDataSourceImpl
 import dagger.Binds
 import dagger.Module
-import javax.inject.Singleton
 
-@Module
-interface UsersModule {
+@Module(
+    includes = [
+        CacheModule::class,
+        ApiModule::class
+    ]
+)
+interface InfoRepositoryModule {
 
     /**
-     * @Singleton означает, что зависимость в параметре функции(например  GithubUsersRepositoryImpl)
-     * будет создаваться в единственном экземпляре.
      * В параметр функции передаем конкретную имплементацию, а возвращаем реализацию интерфейса.
      * @Binds используем только в интерфейсе.
      *
      * Удаляем фабрики и добавляем функции, предоставляющие различные объекты.
      */
 
-    @Singleton
     @Binds
-    fun bindUsersRepository(repository: GithubUsersRepositoryImpl): GithubUsersRepository
+    fun bindInfoRepository(repository: GithubUsersRepositoryImpl): GithubUsersRepository
 
-    @Singleton
     @Binds
-    fun bindCloudDataSource(dataSource: CloudUserDataSourceImpl): CloudUserDataSource
+    fun bindInfoCloudDataSource(dataSource: CloudUserDataSourceImpl): CloudUserDataSource
 
-    @Singleton
     @Binds
-    fun bindCacheDataSource(dataSource: CacheUserDataSourceImpl): CacheUserDataSource
+    fun bindInfoCacheDataSource(dataSource: CacheUserDataSourceImpl): CacheUserDataSource
 }

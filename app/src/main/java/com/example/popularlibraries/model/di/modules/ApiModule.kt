@@ -9,7 +9,6 @@ import retrofit2.Retrofit
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Named
-import javax.inject.Singleton
 
 /**
  * @Provides  используем в классе,
@@ -30,12 +29,10 @@ class ApiModule {
     /**
      * создаем объект Gson
      */
-    @Singleton
     @Provides
     fun gson(): Gson = GsonBuilder()
         .create()
 
-    @Singleton
     @Provides
     fun provideApi(@Named("github_api") baseUrl: String, gson: Gson): GithubApi =
 

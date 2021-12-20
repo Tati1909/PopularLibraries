@@ -10,6 +10,15 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.plusAssign
 import moxy.MvpPresenter
 
+/**
+ * @Inject constructor используем тогда, когда все аргументы берутся из графа.
+ * @AssistedInject constructor - когда есть хотя бы 1 аргумент не из графа.
+ *
+ * @Assisted помечаем поле, которое берется не из графа (например userLogin берется из фрагмента),
+ * т. е. говорим: Dagger, не смотри на это поле.
+ * Чтобы применить @Assisted мы должны создать фабрику DetailPresenterFactory,
+ * чтобы передать userLogin в параметры.
+ */
 class DetailPresenter(
     private val userLogin: String,
     private val gitHubRepo: GithubUsersRepository,
