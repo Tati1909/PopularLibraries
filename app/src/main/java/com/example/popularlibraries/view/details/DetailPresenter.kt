@@ -6,8 +6,6 @@ import com.example.popularlibraries.model.repository.GithubUsersRepository
 import com.example.popularlibraries.navigation.InfoScreen
 import com.example.popularlibraries.scheduler.Schedulers
 import com.github.terrakok.cicerone.Router
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.plusAssign
 import moxy.MvpPresenter
@@ -21,8 +19,8 @@ import moxy.MvpPresenter
  * Чтобы применить @Assisted мы должны создать фабрику DetailPresenterFactory,
  * чтобы передать userLogin в параметры.
  */
-class DetailPresenter @AssistedInject constructor(
-    @Assisted private val userLogin: String,
+class DetailPresenter(
+    private val userLogin: String,
     private val gitHubRepo: GithubUsersRepository,
     //Schedulers - наш интерфейс
     private val schedulers: Schedulers,

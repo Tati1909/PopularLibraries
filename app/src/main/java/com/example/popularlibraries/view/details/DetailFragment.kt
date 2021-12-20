@@ -1,5 +1,6 @@
 package com.example.popularlibraries.view.details
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,16 +9,21 @@ import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.popularlibraries.App
 import com.example.popularlibraries.R
 import com.example.popularlibraries.databinding.FragmentDetailsBinding
+import com.example.popularlibraries.model.di.components.DetailComponent
 import com.example.popularlibraries.model.entity.GitHubUserEntity
 import com.example.popularlibraries.model.entity.GitHubUserRepoEntity
-import com.example.popularlibraries.view.inject.DaggerMvpFragment
+import com.example.popularlibraries.model.repository.GithubUsersRepository
+import com.example.popularlibraries.scheduler.Schedulers
 import com.example.popularlibraries.view.setStartDrawableCircleImageFromUri
+import com.github.terrakok.cicerone.Router
+import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 import javax.inject.Inject
 
-class DetailFragment : DaggerMvpFragment(R.layout.fragment_details), DetailsView,
+class DetailFragment : MvpAppCompatFragment(R.layout.fragment_details), DetailsView,
     UserReposAdapter.Delegate {
 
     companion object {
@@ -36,7 +42,15 @@ class DetailFragment : DaggerMvpFragment(R.layout.fragment_details), DetailsView
     }
 
     @Inject
-    lateinit var presenterFactory: DetailPresenterFactory
+    lateinit var schedulers: Schedulers
+
+    @Inject
+    lateinit var router: Router
+
+    @Inject
+    lateinit var gitHubUserRepository: GithubUsersRepository
+
+    private var detailComponent: DetailComponent? = null
 
     /**
      * Получаем наш аргумент
@@ -49,13 +63,29 @@ class DetailFragment : DaggerMvpFragment(R.layout.fragment_details), DetailsView
      * userLogin - передаем наш логин из bundle презентеру.
      */
     private val presenter: DetailPresenter by moxyPresenter {
-        presenterFactory.create(userLogin)
+        DetailPresenter(
+            userLogin = userLogin,
+            gitHubRepo = gitHubUserRepository,
+            schedulers = schedulers,
+            router = router
+        )
     }
 
     private var _binding: FragmentDetailsBinding? = null
     private val binding get() = _binding!!
 
     private val userReposAdapter: UserReposAdapter = UserReposAdapter(delegate = this)
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+        detailComponent =
+            (requireActivity().application as? App)
+                ?.applicationComponent
+                ?.gitHubUserComponent()
+                ?.build()
+                ?.also { it.inject(this) }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -119,5 +149,10 @@ class DetailFragment : DaggerMvpFragment(R.layout.fragment_details), DetailsView
      */
     override fun onItemClicked(gitHubUserRepoEntity: GitHubUserRepoEntity) {
         presenter.displayUser(gitHubUserRepoEntity.repoUrl)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        detailComponent = null
     }
 }

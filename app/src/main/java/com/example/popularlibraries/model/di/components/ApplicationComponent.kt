@@ -1,11 +1,8 @@
-package com.example.popularlibraries.model.di
+package com.example.popularlibraries.model.di.components
 
 import android.content.Context
 import com.example.popularlibraries.App
-import com.example.popularlibraries.model.di.modules.ApiModule
-import com.example.popularlibraries.model.di.modules.CacheModule
-import com.example.popularlibraries.model.di.modules.UiModule
-import com.example.popularlibraries.model.di.modules.UsersModule
+import com.example.popularlibraries.model.di.modules.basicsmodules.ApplicationModule
 import com.example.popularlibraries.scheduler.Schedulers
 import com.github.terrakok.cicerone.NavigatorHolder
 import com.github.terrakok.cicerone.Router
@@ -13,24 +10,26 @@ import dagger.BindsInstance
 import dagger.Component
 import dagger.android.AndroidInjectionModule
 import dagger.android.AndroidInjector
-import javax.inject.Singleton
 
 /**
  * @Component отмечает интерфейс ApplicationComponent, который позже используется для генерации кода. В нём
  * определяется, куда что-либо внедрять, а также методы для прямого доступа к зависимостям.
  * Имплементим AndroidInjector<App>, чтобы не писать inject-методы.
  */
-@Singleton
 @Component(
     modules = [
         AndroidInjectionModule::class,
-        UiModule::class,
-        UsersModule::class,
-        ApiModule::class,
-        CacheModule::class
+        ApplicationModule::class
     ]
 )
 interface ApplicationComponent : AndroidInjector<App> {
+
+    /**
+     * функции возвращают Builder определенного субкомпонента
+     */
+    fun gitHubUsersComponent(): UsersComponent.Builder
+    fun gitHubUserComponent(): DetailComponent.Builder
+    fun gitHubInfoComponent(): InfoComponent.Builder
 
     @Component.Builder
     interface Builder {

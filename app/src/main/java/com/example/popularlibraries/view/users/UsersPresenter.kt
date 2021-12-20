@@ -7,7 +7,6 @@ import com.example.popularlibraries.scheduler.Schedulers
 import com.github.terrakok.cicerone.Router
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import moxy.MvpPresenter
-import javax.inject.Inject
 
 //Router необходим для навигации.
 //В MvpPresenter есть экземпляр класса ViewState, который реализует тот тип View, которым
@@ -16,7 +15,7 @@ import javax.inject.Inject
 //● получаем данные из репозитория;
 //● при первом присоединении View вызываем метод init(), в котором напишем все операции по
 //инициализации View;
-class UsersPresenter @Inject constructor(
+class UsersPresenter(
     //Schedulers - наш интерфейс
     private val schedulers: Schedulers,
     private val model: GithubUsersRepository,
