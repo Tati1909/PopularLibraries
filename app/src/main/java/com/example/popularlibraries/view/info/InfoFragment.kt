@@ -24,7 +24,7 @@ class InfoFragment : MvpAppCompatFragment(R.layout.fragment_info), InfoView {
     companion object {
 
         //аргумент, который мы передаем во фрагмент
-        private const val ARG_REPO_URL = "repository_url"
+        const val ARG_REPO_URL = "repository_url"
 
         //newInstance вызываем в InfoScreen и передаем в аргумент repositoryUrl из модели,
         //а InfoScreen создаем в InfoPresenter в методе displayUser
