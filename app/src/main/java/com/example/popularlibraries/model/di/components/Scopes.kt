@@ -1,4 +1,4 @@
-package com.example.popularlibraries.model.di.modules
+package com.example.popularlibraries.model.di.components
 
 import javax.inject.Scope
 

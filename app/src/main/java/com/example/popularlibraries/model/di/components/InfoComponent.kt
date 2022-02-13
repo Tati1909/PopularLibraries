@@ -1,6 +1,5 @@
 package com.example.popularlibraries.model.di.components
 
-import com.example.popularlibraries.model.di.modules.GitHubInfo
 import com.example.popularlibraries.model.di.modules.basicsmodules.InfoModule
 import com.example.popularlibraries.view.info.InfoFragment
 import dagger.Subcomponent

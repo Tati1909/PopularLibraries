@@ -22,13 +22,13 @@ class App : DaggerApplication() {
         instance = this@App
     }
 
+    override fun applicationInjector(): AndroidInjector<App> =
+        applicationComponent
+
     /**
      * Dagger скомпилировал нам наш компонент Dagger+ApplicationComponent,
      * который создает граф зависимостей(cicerone, router, schedulers).
      */
-    override fun applicationInjector(): AndroidInjector<App> =
-        applicationComponent
-
     val applicationComponent: ApplicationComponent by lazy {
         DaggerApplicationComponent
             .builder()
