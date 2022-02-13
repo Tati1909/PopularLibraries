@@ -29,7 +29,7 @@ class DetailFragment : MvpAppCompatFragment(R.layout.fragment_details), DetailsV
     companion object {
 
         //аргумент, который мы передаем во фрагмент
-        private const val ARG_USER = "arg_user"
+        const val ARG_USER = "arg_user"
 
         //newInstance вызываем в DetailScreen и передаем в аргумент login из модели
         //а DetailScreen создаем в UsersPresenter в методе displayUser
