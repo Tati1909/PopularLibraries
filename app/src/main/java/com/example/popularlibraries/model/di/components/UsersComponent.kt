@@ -1,6 +1,5 @@
 package com.example.popularlibraries.model.di.components
 
-import com.example.popularlibraries.model.di.modules.GitHubUsers
 import com.example.popularlibraries.model.di.modules.basicsmodules.UsersModule
 import com.example.popularlibraries.view.users.UsersFragment
 import dagger.Subcomponent
