@@ -21,11 +21,10 @@ import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 import javax.inject.Inject
 
-class UsersFragment : MvpAppCompatFragment(R.layout.fragment_users), UsersView,
-    UsersRVAdapter.Delegate,
-    BackButtonListener {
+class UsersFragment : MvpAppCompatFragment(R.layout.fragment_users), UsersView, BackButtonListener {
 
     companion object {
+
         fun newInstance(): Fragment = UsersFragment().apply { arguments }
     }
 
@@ -52,7 +51,9 @@ class UsersFragment : MvpAppCompatFragment(R.layout.fragment_users), UsersView,
 
     private var _binding: FragmentUsersBinding? = null
     private val binding get() = _binding!!
-    private val adapter = UsersRVAdapter(delegate = this)
+    private val adapterUsers by lazy(LazyThreadSafetyMode.NONE) {
+        UsersRVAdapter(presenter::onItemClicked)
+    }
 
     private var usersComponent: UsersComponent? = null
 
@@ -87,7 +88,7 @@ class UsersFragment : MvpAppCompatFragment(R.layout.fragment_users), UsersView,
         super.onViewCreated(view, savedInstanceState)
 
         binding.usersRecyclerview.layoutManager = LinearLayoutManager(context)
-        binding.usersRecyclerview.adapter = adapter
+        binding.usersRecyclerview.adapter = adapterUsers
     }
 
     //Уничтожаем ссылки на View Binding в onDestroyView, чтобы не возникла утечка памяти,
@@ -108,18 +109,12 @@ class UsersFragment : MvpAppCompatFragment(R.layout.fragment_users), UsersView,
     override fun init(users: List<GithubUser>) {
         //чтобы обновить представление списка, вызовите submitList(),
         //передав список пользователей из модели
-        adapter.submitList(users)
+        adapterUsers.submitList(users)
     }
 
     override fun showError(error: Throwable) {
         Toast.makeText(requireContext(), error.message, Toast.LENGTH_SHORT).show()
     }
 
-    override fun onItemClicked(user: GithubUser) {
-        presenter.displayUser(user)
-    }
-
     override fun backPressed() = presenter.backPressed()
-
-
 }

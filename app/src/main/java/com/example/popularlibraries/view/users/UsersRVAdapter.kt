@@ -15,10 +15,12 @@ import com.example.popularlibraries.view.setStartDrawableCircleImageFromUri
 //Может показаться, что если адаптер — ui, то он и
 //есть View. Но это не так.
 
-class UsersRVAdapter(private val delegate: Delegate) :
-    ListAdapter<GithubUser, UsersRVAdapter.ViewHolder>(DiffCallback) {
+class UsersRVAdapter(
+    private val onItemClicked: (user: GithubUser) -> Unit
+) : ListAdapter<GithubUser, UsersRVAdapter.ViewHolder>(DiffCallback) {
 
     interface Delegate {
+
         /**
          * Событие наступает при выборе
          * пользователя из списка
@@ -29,7 +31,7 @@ class UsersRVAdapter(private val delegate: Delegate) :
     class ViewHolder(private val binding: ItemUserBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(gitHubUser: GithubUser, delegate: Delegate?) {
+        fun bind(gitHubUser: GithubUser) {
             //загружаем аватарку слева от логина пользователя
             binding.loginTextView.setStartDrawableCircleImageFromUri(gitHubUser.avatarUrl)
             binding.loginTextView.text = gitHubUser.login
@@ -45,13 +47,13 @@ class UsersRVAdapter(private val delegate: Delegate) :
             itemView.setOnClickListener {
 
                 val position = this.adapterPosition
-                delegate.onItemClicked(getItem(position))
+                onItemClicked(getItem(position))
             }
         }
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) =
-        holder.bind(getItem(position), delegate)
+        holder.bind(getItem(position))
 
     companion object {
         //DiffCallback класс, который мы указали для ListAdapter? Это просто объект,

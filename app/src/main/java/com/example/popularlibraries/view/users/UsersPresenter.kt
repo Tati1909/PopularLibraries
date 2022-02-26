@@ -9,8 +9,6 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import moxy.MvpPresenter
 
 //Router необходим для навигации.
-//В MvpPresenter есть экземпляр класса ViewState, который реализует тот тип View, которым
-//типизирован MvpPresenter - UsersView.
 //В остальном всё просто:
 //● получаем данные из репозитория;
 //● при первом присоединении View вызываем метод init(), в котором напишем все операции по
@@ -32,9 +30,6 @@ class UsersPresenter(
     //При повторном присоединении onFirstViewAttach уже вызываться не будет — это важно помнить.
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
-        //Чтобы воспользоваться механизмом сохранения состояния, просто
-        //заменяем в Presenter все обращения к View на обращения к ViewState.
-        // Проще говоря, вместо view.something() мы пишем viewState.init().
 
         //Параметры: onSuccess and onError
         disposables.add(
@@ -63,6 +58,10 @@ class UsersPresenter(
     fun backPressed(): Boolean {
         router.exit()
         return true
+    }
+
+    fun onItemClicked(user: GithubUser) {
+        displayUser(user)
     }
 
     override fun onDestroy() {
