@@ -33,7 +33,10 @@ class DetailPresenter(
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
+        loadUser()
+    }
 
+    private fun loadUser() {
         /***
         // Параметры subscribe :
         onSuccess - чтобы принимать значение успеха от Maybe
@@ -48,8 +51,8 @@ class DetailPresenter(
                     .observeOn(schedulers.main())
                     .subscribe(
                         { userEntity -> doOnSuccessLoadUserLoginData(userEntity) },
-                        { throwable -> viewState.showError(throwable) },
-                        { viewState.showUserNotFound() }
+                        { throwable -> doOnErrorLoadUserLoginData(throwable) },
+                        { doOnCompleteLoadUserLoginData() }
                     )
             )
         }
@@ -66,6 +69,14 @@ class DetailPresenter(
     fun doOnSuccessLoadUserLoginData(user: GitHubUserEntity) {
         viewState.showUser(user)
         loadUserReposData(user)
+    }
+
+    private fun doOnErrorLoadUserLoginData(throwable: Throwable) {
+        viewState.showError(throwable)
+    }
+
+    private fun doOnCompleteLoadUserLoginData() {
+        viewState.showUserNotFound()
     }
 
     private fun loadUserReposData(user: GitHubUserEntity) {
@@ -95,7 +106,7 @@ class DetailPresenter(
         viewState.loadingLayoutIsVisible(false)
     }
 
-    private fun doOnCompleteLoadUserReposData() {
+    fun doOnCompleteLoadUserReposData() {
         viewState.showReposNotFound()
         viewState.loadingLayoutIsVisible(false)
     }
