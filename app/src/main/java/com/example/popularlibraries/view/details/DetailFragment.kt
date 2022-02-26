@@ -16,6 +16,7 @@ import com.example.popularlibraries.model.di.components.DetailComponent
 import com.example.popularlibraries.model.entity.GitHubUserEntity
 import com.example.popularlibraries.model.entity.GitHubUserRepoEntity
 import com.example.popularlibraries.model.repository.GithubUsersRepository
+import com.example.popularlibraries.navigation.BackButtonListener
 import com.example.popularlibraries.scheduler.Schedulers
 import com.example.popularlibraries.view.setStartDrawableCircleImageFromUri
 import com.github.terrakok.cicerone.Router
@@ -23,8 +24,7 @@ import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 import javax.inject.Inject
 
-class DetailFragment : MvpAppCompatFragment(R.layout.fragment_details), DetailsView,
-    UserReposAdapter.Delegate {
+class DetailFragment : MvpAppCompatFragment(R.layout.fragment_details), DetailsView, BackButtonListener {
 
     companion object {
 
@@ -74,7 +74,9 @@ class DetailFragment : MvpAppCompatFragment(R.layout.fragment_details), DetailsV
     private var _binding: FragmentDetailsBinding? = null
     private val binding get() = _binding!!
 
-    private val userReposAdapter: UserReposAdapter = UserReposAdapter(delegate = this)
+    private val userReposAdapter by lazy(LazyThreadSafetyMode.NONE) {
+        UserReposAdapter(onItemClicked = presenter::onItemClicked)
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -143,13 +145,7 @@ class DetailFragment : MvpAppCompatFragment(R.layout.fragment_details), DetailsV
         Toast.makeText(requireContext(), error.message, Toast.LENGTH_SHORT).show()
     }
 
-    /**
-     * При нажатии на репозиторий переходим на другой экран и
-     * передаем ссылку на выбранный репозиторий - repoUrl
-     */
-    override fun onItemClicked(gitHubUserRepoEntity: GitHubUserRepoEntity) {
-        presenter.displayUser(gitHubUserRepoEntity.repoUrl)
-    }
+    override fun backPressed() = presenter.backPressed()
 
     override fun onDestroy() {
         super.onDestroy()

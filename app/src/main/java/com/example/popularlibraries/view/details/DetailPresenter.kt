@@ -25,8 +25,7 @@ class DetailPresenter(
     //Schedulers - наш интерфейс
     private val schedulers: Schedulers,
     private val router: Router
-) :
-    MvpPresenter<DetailsView>() {
+) : MvpPresenter<DetailsView>() {
 
     //CompositeDisposable позволяет отменять наборы цепочек
     //для операций add(Disposable), remove(Disposable) и delete(Disposable).
@@ -56,7 +55,15 @@ class DetailPresenter(
         }
     }
 
-    private fun doOnSuccessLoadUserLoginData(user: GitHubUserEntity) {
+    /**
+     * При нажатии на репозиторий переходим на другой экран и
+     * передаем ссылку на выбранный репозиторий - repoUrl
+     */
+    fun onItemClicked(gitHubUserRepoEntity: GitHubUserRepoEntity) {
+        displayUser(gitHubUserRepoEntity.repoUrl)
+    }
+
+    fun doOnSuccessLoadUserLoginData(user: GitHubUserEntity) {
         viewState.showUser(user)
         loadUserReposData(user)
     }
@@ -99,6 +106,15 @@ class DetailPresenter(
      */
     fun displayUser(repoUrl: String) =
         router.navigateTo(InfoScreen(repoUrl).create())
+
+    /**Для обработки нажатия клавиши «Назад» добавляем функцию backPressed(). Она возвращает
+    Boolean, где мы передаём обработку выхода с экрана роутеру. Вообще, функции Presenter, согласно
+    парадигме, не должны ничего возвращать, но в нашем случае приходится идти на компромисс из-за
+    недостатков фреймворка.*/
+    fun backPressed(): Boolean {
+        router.exit()
+        return true
+    }
 
     override fun onDestroy() {
         super.onDestroy()
