@@ -1,11 +1,17 @@
 package com.example.popularlibraries.view.users
 
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.example.popularlibraries.model.datasource.GithubUser
 import com.example.popularlibraries.model.repository.GithubUsersRepository
 import com.example.popularlibraries.navigation.DetailScreen
-import com.example.popularlibraries.scheduler.Schedulers
 import com.github.terrakok.cicerone.Router
-import io.reactivex.rxjava3.disposables.CompositeDisposable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.launch
 import moxy.MvpPresenter
 
 //Router необходим для навигации.
@@ -16,44 +22,45 @@ import moxy.MvpPresenter
 //● при первом присоединении View вызываем метод init(), в котором напишем все операции по
 //инициализации View;
 class UsersPresenter(
-    //Schedulers - наш интерфейс
-    private val schedulers: Schedulers,
     private val model: GithubUsersRepository,
     private val router: Router
 ) : MvpPresenter<UsersView>() {
 
-    //CompositeDisposable позволяет отменять наборы цепочек
-    //для операций add(Disposable), remove(Disposable) и delete(Disposable).
-    private val disposables = CompositeDisposable()
+    private var usersFlow: Flow<PagingData<GithubUser>> = emptyFlow()
+    private val viewModelCoroutineScope = CoroutineScope(
+        Dispatchers.Main
+            + SupervisorJob()
+    )
 
-    //Этот метод в первый раз вызывается при присоединении View к Presenter.
+    /**
+     *  Этот метод в первый раз вызывается при присоединении View к Presenter.
     //При уничтожении View, например, при повороте экрана, она отсоединится, а при пересоздании
     //присоединится вновь. И на новой View согласно стратегиям будут выполняться команды.
     //При повторном присоединении onFirstViewAttach уже вызываться не будет — это важно помнить.
+     */
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
-        //Чтобы воспользоваться механизмом сохранения состояния, просто
-        //заменяем в Presenter все обращения к View на обращения к ViewState.
-        // Проще говоря, вместо view.something() мы пишем viewState.init().
+        loadUsers()
+    }
 
-        //Параметры: onSuccess and onError
-        disposables.add(
-            model
-                .getUsers()
-                .subscribeOn(schedulers.background())
-                .observeOn(schedulers.main())
-                .subscribe(
-                    viewState::init,
-                    viewState::showError
-                )
-        )
+    private fun loadUsers() {
+        viewModelCoroutineScope.launch {
+            try {
+                usersFlow = model.getUsersWithPagination()
+                    .flow
+                    .cachedIn(this)
+                viewState.init(usersFlow)
+            } catch (e: Exception) {
+                viewState::showError
+            }
+        }
     }
 
     /**переход на экран пользователя c помощью router.navigateTo
     //при нажатии на элемент создаем объект DetailScreen и вызываем метод create,
     //который в свою очередь создает Detailfragment и ложит логин пользователя в корзину
      */
-    fun displayUser(user: GithubUser) =
+    fun onUserClicked(user: GithubUser) =
         router.navigateTo(DetailScreen(user).create())
 
     /**Для обработки нажатия клавиши «Назад» добавляем функцию backPressed(). Она возвращает
@@ -63,10 +70,5 @@ class UsersPresenter(
     fun backPressed(): Boolean {
         router.exit()
         return true
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        disposables.clear()
     }
 }

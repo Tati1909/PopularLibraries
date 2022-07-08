@@ -1,7 +1,9 @@
 package com.example.popularlibraries.view.users
 
+import androidx.paging.PagingData
 import com.example.popularlibraries.model.datasource.GithubUser
 import com.example.popularlibraries.view.ScreenView
+import kotlinx.coroutines.flow.Flow
 import moxy.viewstate.strategy.AddToEndSingleStrategy
 import moxy.viewstate.strategy.StateStrategyType
 
@@ -14,5 +16,5 @@ import moxy.viewstate.strategy.StateStrategyType
 @StateStrategyType(AddToEndSingleStrategy::class)
 interface UsersView : ScreenView {
 
-    fun init(users: List<GithubUser>)
+    fun init(usersFlow: Flow<PagingData<GithubUser>>)
 }

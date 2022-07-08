@@ -21,23 +21,11 @@ import javax.inject.Inject
  */
 class MainActivity : DaggerMvpActivity(R.layout.activity_main), MainView {
 
+    @Inject lateinit var navigatorHolder: NavigatorHolder
+    @Inject lateinit var router: Router
     private val navigator = AppNavigator(this@MainActivity, R.id.container)
-
-    /** Объявляем Presenter и делегируем его создание и хранение через делегат moxyPresenter.
-    moxyPresenter создает новый экземпляр MoxyKtxDelegate.
-    Делегат подключается к жизненному циклу активити */
-    private val presenter by moxyPresenter {
-        MainPresenter(router)
-    }
-
-    @Inject
-    lateinit var navigatorHolder: NavigatorHolder
-
-    @Inject
-    lateinit var router: Router
-
+    private val presenter by moxyPresenter { MainPresenter(router) }
     private val disposables = CompositeDisposable()
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
