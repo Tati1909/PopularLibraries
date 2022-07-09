@@ -15,8 +15,6 @@ import kotlinx.coroutines.launch
 import moxy.MvpPresenter
 
 //Router необходим для навигации.
-//В MvpPresenter есть экземпляр класса ViewState, который реализует тот тип View, которым
-//типизирован MvpPresenter - UsersView.
 //В остальном всё просто:
 //● получаем данные из репозитория;
 //● при первом присоединении View вызываем метод init(), в котором напишем все операции по

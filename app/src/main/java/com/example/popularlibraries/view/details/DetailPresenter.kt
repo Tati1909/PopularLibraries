@@ -25,8 +25,7 @@ class DetailPresenter(
     //Schedulers - наш интерфейс
     private val schedulers: Schedulers,
     private val router: Router
-) :
-    MvpPresenter<DetailsView>() {
+) : MvpPresenter<DetailsView>() {
 
     //CompositeDisposable позволяет отменять наборы цепочек
     //для операций add(Disposable), remove(Disposable) и delete(Disposable).
@@ -34,7 +33,10 @@ class DetailPresenter(
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
+        loadUser()
+    }
 
+    private fun loadUser() {
         /***
         // Параметры subscribe :
         onSuccess - чтобы принимать значение успеха от Maybe
@@ -49,16 +51,32 @@ class DetailPresenter(
                     .observeOn(schedulers.main())
                     .subscribe(
                         { userEntity -> doOnSuccessLoadUserLoginData(userEntity) },
-                        { throwable -> viewState.showError(throwable) },
-                        { viewState.showUserNotFound() }
+                        { throwable -> doOnErrorLoadUserLoginData(throwable) },
+                        { doOnCompleteLoadUserLoginData() }
                     )
             )
         }
     }
 
-    private fun doOnSuccessLoadUserLoginData(user: GitHubUserEntity) {
+    /**
+     * При нажатии на репозиторий переходим на другой экран и
+     * передаем ссылку на выбранный репозиторий - repoUrl
+     */
+    fun onItemClicked(gitHubUserRepoEntity: GitHubUserRepoEntity) {
+        displayUser(gitHubUserRepoEntity.repoUrl)
+    }
+
+    fun doOnSuccessLoadUserLoginData(user: GitHubUserEntity) {
         viewState.showUser(user)
         loadUserReposData(user)
+    }
+
+    private fun doOnErrorLoadUserLoginData(throwable: Throwable) {
+        viewState.showError(throwable)
+    }
+
+    private fun doOnCompleteLoadUserLoginData() {
+        viewState.showUserNotFound()
     }
 
     private fun loadUserReposData(user: GitHubUserEntity) {
@@ -88,7 +106,7 @@ class DetailPresenter(
         viewState.loadingLayoutIsVisible(false)
     }
 
-    private fun doOnCompleteLoadUserReposData() {
+    fun doOnCompleteLoadUserReposData() {
         viewState.showReposNotFound()
         viewState.loadingLayoutIsVisible(false)
     }
@@ -99,6 +117,15 @@ class DetailPresenter(
      */
     fun displayUser(repoUrl: String) =
         router.navigateTo(InfoScreen(repoUrl).create())
+
+    /**Для обработки нажатия клавиши «Назад» добавляем функцию backPressed(). Она возвращает
+    Boolean, где мы передаём обработку выхода с экрана роутеру. Вообще, функции Presenter, согласно
+    парадигме, не должны ничего возвращать, но в нашем случае приходится идти на компромисс из-за
+    недостатков фреймворка.*/
+    fun backPressed(): Boolean {
+        router.exit()
+        return true
+    }
 
     override fun onDestroy() {
         super.onDestroy()
