@@ -5,15 +5,14 @@ import com.example.popularlibraries.model.datasource.GitHubUserRepo
 import com.example.popularlibraries.model.datasource.GitHubUserRepoInfo
 import com.example.popularlibraries.model.datasource.GithubUser
 import io.reactivex.rxjava3.core.Maybe
-import io.reactivex.rxjava3.core.Single
 import javax.inject.Inject
 
 class CloudUserDataSourceImpl @Inject constructor(
     private val githubApi: GithubApi
 ) : CloudUserDataSource {
 
-    override fun getUsers(): Single<List<GithubUser>> {
-        return githubApi.getUsers()
+    override suspend fun getUsers(page: Int, count: Int): List<GithubUser> {
+        return githubApi.getUsers(page, count)
     }
 
     override fun getUserByLogin(userId: String): Maybe<GithubUser> {

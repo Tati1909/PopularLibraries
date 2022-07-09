@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
+import androidx.paging.PagingData
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.popularlibraries.App
 import com.example.popularlibraries.R
@@ -17,25 +19,18 @@ import com.example.popularlibraries.model.repository.GithubUsersRepository
 import com.example.popularlibraries.navigation.BackButtonListener
 import com.example.popularlibraries.scheduler.Schedulers
 import com.github.terrakok.cicerone.Router
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import moxy.MvpAppCompatFragment
 import moxy.ktx.moxyPresenter
 import javax.inject.Inject
 
 class UsersFragment : MvpAppCompatFragment(R.layout.fragment_users), UsersView, BackButtonListener {
 
-    companion object {
-
-        fun newInstance(): Fragment = UsersFragment().apply { arguments }
-    }
-
-    @Inject
-    lateinit var router: Router
-
-    @Inject
-    lateinit var schedulers: Schedulers
-
-    @Inject
-    lateinit var gitHubUserRepository: GithubUsersRepository
+    @Inject lateinit var router: Router
+    @Inject lateinit var schedulers: Schedulers
+    @Inject lateinit var gitHubUserRepository: GithubUsersRepository
 
     /** объявляем Presenter и делегируем его создание и хранение
     через делегат moxyPresenter.
@@ -43,19 +38,17 @@ class UsersFragment : MvpAppCompatFragment(R.layout.fragment_users), UsersView, 
     Делегат подключается к жизненному циклу фрагмента */
     private val presenter: UsersPresenter by moxyPresenter {
         UsersPresenter(
-            schedulers = schedulers,
             model = gitHubUserRepository,
             router = router
         )
     }
 
+    private var usersComponent: UsersComponent? = null
     private var _binding: FragmentUsersBinding? = null
     private val binding get() = _binding!!
-    private val adapterUsers by lazy(LazyThreadSafetyMode.NONE) {
-        UsersRVAdapter(presenter::onItemClicked)
+    private val adapter by lazy {
+        UsersAdapter(presenter::onUserClicked)
     }
-
-    private var usersComponent: UsersComponent? = null
 
     /**
      * Здесь мы инжектим зависимости(router, schedulers,gitHubUserRepository),
@@ -88,7 +81,7 @@ class UsersFragment : MvpAppCompatFragment(R.layout.fragment_users), UsersView, 
         super.onViewCreated(view, savedInstanceState)
 
         binding.usersRecyclerview.layoutManager = LinearLayoutManager(context)
-        binding.usersRecyclerview.adapter = adapterUsers
+        binding.usersRecyclerview.adapter = adapter.withLoadStateFooter(FooterUsersAdapter())
     }
 
     //Уничтожаем ссылки на View Binding в onDestroyView, чтобы не возникла утечка памяти,
@@ -106,10 +99,12 @@ class UsersFragment : MvpAppCompatFragment(R.layout.fragment_users), UsersView, 
         usersComponent = null
     }
 
-    override fun init(users: List<GithubUser>) {
-        //чтобы обновить представление списка, вызовите submitList(),
-        //передав список пользователей из модели
-        adapterUsers.submitList(users)
+    override fun init(usersFlow: Flow<PagingData<GithubUser>>) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            usersFlow.collectLatest {
+                adapter.submitData(it)
+            }
+        }
     }
 
     override fun showError(error: Throwable) {
@@ -117,4 +112,9 @@ class UsersFragment : MvpAppCompatFragment(R.layout.fragment_users), UsersView, 
     }
 
     override fun backPressed() = presenter.backPressed()
+
+    companion object {
+
+        fun newInstance(): Fragment = UsersFragment().apply { arguments }
+    }
 }
