@@ -17,6 +17,6 @@
     <string name="language">Язык:</string>
     <string name="forks_count">Ветвления(forks)</string>
     <string name="forks">forks</string>
-    <string name="error_view">Ошибка сервера</string>
+    <string name="error_view">Ошибка сервера. Мы уже работаем над ее исправлением</string>
 
 </resources>
