@@ -1,7 +1,5 @@
 package com.example.popularlibraries.model.repository
 
-import androidx.paging.Pager
-import androidx.paging.PagingConfig
 import com.example.popularlibraries.model.cloud.CloudUserDataSource
 import com.example.popularlibraries.model.datasource.GitHubUserRepo
 import com.example.popularlibraries.model.datasource.GitHubUserRepoInfo
@@ -25,11 +23,6 @@ class GithubUsersRepositoryImpl @Inject constructor(
         cache.insertListUsers(users)
         return users
     }
-
-    override fun getUsersWithPagination(): Pager<Int, GithubUser> = Pager(
-        pagingSourceFactory = { GithubUsersPagingSource(this) },
-        config = PagingConfig(pageSize = USER_PAGE_SIZE)
-    )
 
     /**получаем пользователя в DetailsFragment по его логину
     Если наш кеш не пустой, то сначала берем из него данные

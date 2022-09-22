@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.PagingData
@@ -18,27 +19,22 @@ import com.example.popularlibraries.model.di.components.UsersComponent
 import com.example.popularlibraries.model.repository.GithubUsersRepository
 import com.example.popularlibraries.navigation.BackButtonListener
 import com.example.popularlibraries.scheduler.Schedulers
+import com.example.popularlibraries.viewmodel.lazyViewModel
 import com.github.terrakok.cicerone.Router
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import moxy.MvpAppCompatFragment
-import moxy.ktx.moxyPresenter
 import javax.inject.Inject
 
-class UsersFragment : MvpAppCompatFragment(R.layout.fragment_users), UsersView, BackButtonListener {
+class UsersFragment : Fragment(R.layout.fragment_users), BackButtonListener {
 
     @Inject lateinit var router: Router
     @Inject lateinit var schedulers: Schedulers
     @Inject lateinit var gitHubUserRepository: GithubUsersRepository
 
-    /** объявляем Presenter и делегируем его создание и хранение
-    через делегат moxyPresenter.
-    moxyPresenter создает новый экземпляр MoxyKtxDelegate.
-    Делегат подключается к жизненному циклу фрагмента */
-    private val presenter: UsersPresenter by moxyPresenter {
-        UsersPresenter(
-            model = gitHubUserRepository,
+    private val viewModel: UsersViewModel by lazyViewModel {
+        UsersViewModel(
+            usersRepository = gitHubUserRepository,
             router = router
         )
     }
@@ -47,7 +43,7 @@ class UsersFragment : MvpAppCompatFragment(R.layout.fragment_users), UsersView, 
     private var _binding: FragmentUsersBinding? = null
     private val binding get() = _binding!!
     private val adapter by lazy {
-        UsersAdapter(presenter::onUserClicked)
+        UsersAdapter(viewModel::onUserClicked)
     }
 
     /**
@@ -82,6 +78,29 @@ class UsersFragment : MvpAppCompatFragment(R.layout.fragment_users), UsersView, 
 
         binding.usersRecyclerview.layoutManager = LinearLayoutManager(context)
         binding.usersRecyclerview.adapter = adapter.withLoadStateFooter(FooterUsersAdapter())
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            viewModel.state.collect {
+                showState(it)
+            }
+        }
+    }
+
+    private fun showState(state: UiState<Flow<PagingData<GithubUser>>>) {
+        hideAllStates(state)
+        when (state) {
+            is UiState.Error -> {
+                showError(state.description)
+            }
+            is UiState.Content -> {
+                showUsers(state.data)
+            }
+        }
+    }
+
+    private fun hideAllStates(excludeState: UiState<*>) {
+        if (excludeState !is UiState.Content) {
+            binding.swipeRefreshLayout.isVisible = false
+        }
     }
 
     //Уничтожаем ссылки на View Binding в onDestroyView, чтобы не возникла утечка памяти,
@@ -91,15 +110,13 @@ class UsersFragment : MvpAppCompatFragment(R.layout.fragment_users), UsersView, 
         _binding = null
     }
 
-    /**
-     * Очищаем экран с субкомпонентом
-     */
+    /** Очищаем экран с субкомпонентом */
     override fun onDestroy() {
         super.onDestroy()
         usersComponent = null
     }
 
-    override fun init(usersFlow: Flow<PagingData<GithubUser>>) {
+    private fun showUsers(usersFlow: Flow<PagingData<GithubUser>>) {
         viewLifecycleOwner.lifecycleScope.launch {
             usersFlow.collectLatest {
                 adapter.submitData(it)
@@ -107,11 +124,11 @@ class UsersFragment : MvpAppCompatFragment(R.layout.fragment_users), UsersView, 
         }
     }
 
-    override fun showError(error: Throwable) {
-        Toast.makeText(requireContext(), error.message, Toast.LENGTH_SHORT).show()
+    private fun showError(error: String) {
+        Toast.makeText(requireContext(), error, Toast.LENGTH_SHORT).show()
     }
 
-    override fun backPressed() = presenter.backPressed()
+    override fun backPressed() = viewModel.backPressed()
 
     companion object {
 
