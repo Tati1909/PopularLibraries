@@ -1,7 +1,7 @@
 package com.example.popularlibraries.model.di.modules.basicsmodules
 
 import com.example.popularlibraries.model.di.modules.DetailRepositoryModule
-import com.example.popularlibraries.view.details.DetailFragment
+import com.example.popularlibraries.view.details.DetailsFragment
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
 
@@ -9,5 +9,5 @@ import dagger.android.ContributesAndroidInjector
 interface DetailModule {
 
     @ContributesAndroidInjector
-    fun bindDetailsFragment(): DetailFragment
+    fun bindDetailsFragment(): DetailsFragment
 }

@@ -3,9 +3,9 @@
     <string name="counter_one">Счетчик 1</string>
     <string name="counter_two">Счетчик 2</string>
     <string name="counter_three">Счетчик 3</string>
-    <string name="user_repositories_not_found_message">User\'s repositories not found</string>
-    <string name="user_not_found_message">User not found</string>
-    <string name="user_repository_not_found_message">User\'s repository not found</string>
+    <string name="user_repositories_not_found_message">Репозитории пользователя не найдены</string>
+    <string name="user_not_found_message">Ошибка. Что-то пошло не так.</string>
+    <string name="user_repository_not_found_message">Репозиторий пользователя не найден</string>
     <string name="tittle_list">Список репозиториев пользователя:</string>
     <string name="repository">repository</string>
     <string name="login">Логин пользователя</string>
@@ -18,5 +18,6 @@
     <string name="forks_count">Ветвления(forks)</string>
     <string name="forks">forks</string>
     <string name="error_view">Ошибка сервера. Мы уже работаем над ее исправлением</string>
+    <string name="serser_error">Ошибка сервера. Мы уже работаем над ее исправлением</string>
 
 </resources>
