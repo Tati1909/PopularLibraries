@@ -24,18 +24,19 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_start"
-        app:layout_constraintBottom_toTopOf="@+id/list_repository_recyclerview"
+        app:layout_constraintBottom_toTopOf="@+id/repositories"
         android:text="@string/tittle_list"
         android:textSize="@dimen/text_size_default"
         android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@id/login_user" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/list_repository_recyclerview"
+        android:id="@+id/repositories"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:clipToPadding="false"
         android:padding="@dimen/margin_start"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

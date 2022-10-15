@@ -1,6 +1,6 @@
 package com.example.popularlibraries
 
-import com.example.popularlibraries.view.details.DetailFragment
+import com.example.popularlibraries.view.details.DetailsFragment
 import com.example.popularlibraries.view.info.InfoFragment
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotEquals
@@ -11,7 +11,7 @@ class FragmentArgumentsTest {
 
     @Test
     fun checkIsNullFragmentDetailArgument() {
-        assertNotNull(DetailFragment.ARG_USER)
+        assertNotNull(DetailsFragment.ARG_USER)
     }
 
     @Test
@@ -21,11 +21,11 @@ class FragmentArgumentsTest {
 
     @Test
     fun checkIsNotEqualsFragmentArguments() {
-        assertNotEquals(DetailFragment.ARG_USER, InfoFragment.ARG_REPO_URL)
+        assertNotEquals(DetailsFragment.ARG_USER, InfoFragment.ARG_REPO_URL)
     }
 
     @Test
     fun checkIsSameFragmentArguments() {
-        assertFalse(DetailFragment.ARG_USER == InfoFragment.ARG_REPO_URL)
+        assertFalse(DetailsFragment.ARG_USER == InfoFragment.ARG_REPO_URL)
     }
 }

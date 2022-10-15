@@ -4,10 +4,7 @@ import com.example.popularlibraries.model.di.modules.basicsmodules.UsersModule
 import com.example.popularlibraries.view.users.UsersFragment
 import dagger.Subcomponent
 
-/**
- * У каждого субкомпонента есть свой @Scope,
- * т. к. Dagger должен их различать.
- */
+/** У каждого субкомпонента есть свой @Scope,т. к. Dagger должен их различать. */
 @GitHubUsers
 @Subcomponent(modules = [UsersModule::class])
 interface UsersComponent {

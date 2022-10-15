@@ -1,5 +1,6 @@
 package com.example.popularlibraries.view.details
 
+import androidx.lifecycle.ViewModel
 import com.example.popularlibraries.model.entity.GitHubUserEntity
 import com.example.popularlibraries.model.entity.GitHubUserRepoEntity
 import com.example.popularlibraries.model.repository.GithubUsersRepository
@@ -8,37 +9,38 @@ import com.example.popularlibraries.scheduler.Schedulers
 import com.github.terrakok.cicerone.Router
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.plusAssign
-import moxy.MvpPresenter
+import kotlinx.coroutines.flow.MutableStateFlow
 
-/**
- * @Inject constructor используем тогда, когда все аргументы берутся из графа.
- * @AssistedInject constructor - когда есть хотя бы 1 аргумент не из графа.
- *
- * @Assisted помечаем поле, которое берется не из графа (например userLogin берется из фрагмента),
- * т. е. говорим: Dagger, не смотри на это поле.
- * Чтобы применить @Assisted мы должны создать фабрику DetailPresenterFactory,
- * чтобы передать userLogin в параметры.
- */
-class DetailPresenter(
+class DetailsViewModel(
     private val userLogin: String,
     private val gitHubRepo: GithubUsersRepository,
     //Schedulers - наш интерфейс
     private val schedulers: Schedulers,
     private val router: Router
-) : MvpPresenter<DetailsView>() {
+) : ViewModel() {
 
     //CompositeDisposable позволяет отменять наборы цепочек
     //для операций add(Disposable), remove(Disposable) и delete(Disposable).
     private val disposables = CompositeDisposable()
 
-    override fun onFirstViewAttach() {
-        super.onFirstViewAttach()
+    val userEntity = MutableStateFlow<GitHubUserEntity?>(null)
+    val repoEntity = MutableStateFlow<List<GitHubUserRepoEntity>?>(emptyList())
+    val loading = MutableStateFlow(true)
+    val userNotFoundShowed = MutableStateFlow(true)
+    val reposNotFoundShowed = MutableStateFlow(true)
+    val error = MutableStateFlow("")
+
+    init {
         loadUser()
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        disposables.clear()
+    }
+
     private fun loadUser() {
-        /***
-        // Параметры subscribe :
+        /** Параметры subscribe :
         onSuccess - чтобы принимать значение успеха от Maybe
         onError - получаем тост об ошибке
         onComplete - получаем тост о том, что нет выбранного пользователя */
@@ -66,23 +68,23 @@ class DetailPresenter(
         displayUser(gitHubUserRepoEntity.repoUrl)
     }
 
-    fun doOnSuccessLoadUserLoginData(user: GitHubUserEntity) {
-        viewState.showUser(user)
+    private fun doOnSuccessLoadUserLoginData(user: GitHubUserEntity) {
+        userEntity.value = user
         loadUserReposData(user)
     }
 
     private fun doOnErrorLoadUserLoginData(throwable: Throwable) {
-        viewState.showError(throwable)
+        error.value = throwable.message ?: "Ошибка соединения с сервером. Повторите попытку позже"
     }
 
     private fun doOnCompleteLoadUserLoginData() {
-        viewState.showUserNotFound()
+        userNotFoundShowed.value = true
     }
 
     private fun loadUserReposData(user: GitHubUserEntity) {
         /**Здесь мы передаем ссылку на репозитории repositoriesUrl
         для их загрузки*/
-        viewState.loadingLayoutIsVisible(true)
+        loading.value = true
         user.userReposUrl?.let { repositoriesUrl ->
             disposables += gitHubRepo.getUserRepositories(repositoriesUrl)
                 .map { gitHubUserRepos -> gitHubUserRepos.map(GitHubUserRepoEntity.Mapper::map) }
@@ -97,26 +99,27 @@ class DetailPresenter(
     }
 
     private fun doOnSuccessLoadUserReposData(gitHubUserRepos: List<GitHubUserRepoEntity>) {
-        viewState.showRepos(gitHubUserRepos)
-        viewState.loadingLayoutIsVisible(false)
+        repoEntity.value = gitHubUserRepos
+        loading.value = false
     }
 
     private fun doOnErrorLoadUserReposData(error: Throwable) {
-        viewState.showError(error)
-        viewState.loadingLayoutIsVisible(false)
+        this.error.value = error.message ?: "Ошибка соединения с сервером. Повторите попытку позже"
+        loading.value = false
     }
 
-    fun doOnCompleteLoadUserReposData() {
-        viewState.showReposNotFound()
-        viewState.loadingLayoutIsVisible(false)
+    private fun doOnCompleteLoadUserReposData() {
+        reposNotFoundShowed.value = true
+        loading.value = false
     }
 
     /**переход на экран с инфо о репозитории c помощью router.navigateTo
     //при нажатии на элемент создаем объект InfoScreen и вызываем метод create,
     //который в свою очередь создает InfoFragment и ложит ссылку репозитория пользователя в корзину
      */
-    fun displayUser(repoUrl: String) =
+    private fun displayUser(repoUrl: String) {
         router.navigateTo(InfoScreen(repoUrl).create())
+    }
 
     /**Для обработки нажатия клавиши «Назад» добавляем функцию backPressed(). Она возвращает
     Boolean, где мы передаём обработку выхода с экрана роутеру. Вообще, функции Presenter, согласно
@@ -127,8 +130,11 @@ class DetailPresenter(
         return true
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        disposables.clear()
+    fun onUserNotFoundShowed() {
+        userNotFoundShowed.value = false
+    }
+
+    fun onReposNotFoundShowed() {
+        reposNotFoundShowed.value = false
     }
 }
