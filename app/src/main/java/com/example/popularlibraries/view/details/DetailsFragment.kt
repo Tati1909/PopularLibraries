@@ -8,45 +8,34 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import com.example.popularlibraries.App
 import com.example.popularlibraries.R
 import com.example.popularlibraries.base.collectNotEmptyListWhenStarted
 import com.example.popularlibraries.base.collectNotEmptyWhenStarted
 import com.example.popularlibraries.base.collectNotNullWhenStarted
 import com.example.popularlibraries.base.collectTrueWhenStarted
 import com.example.popularlibraries.base.collectWhenStarted
+import com.example.popularlibraries.base.di.findComponentDependencies
 import com.example.popularlibraries.databinding.FragmentDetailsBinding
-import com.example.popularlibraries.model.di.components.DetailComponent
 import com.example.popularlibraries.model.entity.GitHubUserEntity
 import com.example.popularlibraries.model.entity.GitHubUserRepoEntity
-import com.example.popularlibraries.model.repository.GithubUsersRepository
 import com.example.popularlibraries.navigation.BackButtonListener
-import com.example.popularlibraries.scheduler.Schedulers
+import com.example.popularlibraries.view.details.di.DetailComponent
 import com.example.popularlibraries.view.setStartDrawableCircleImageFromUri
 import com.example.popularlibraries.viewmodel.lazyViewModel
-import com.github.terrakok.cicerone.Router
 import javax.inject.Inject
 
 class DetailsFragment : Fragment(R.layout.fragment_details), BackButtonListener {
 
-    @Inject lateinit var schedulers: Schedulers
-    @Inject lateinit var router: Router
-    @Inject lateinit var gitHubUserRepository: GithubUsersRepository
+    @Inject lateinit var viewModelFactory: DetailsViewModel.Factory
     private var _binding: FragmentDetailsBinding? = null
     private val binding get() = _binding!!
-    private var detailComponent: DetailComponent? = null
 
     /** Получаем наш аргумент */
     private val userLogin: String by lazy { arguments?.getString(ARG_USER).orEmpty() }
 
     /** userLogin - передаем наш логин из bundle вьюмодели. */
     private val viewModel: DetailsViewModel by lazyViewModel {
-        DetailsViewModel(
-            userLogin = userLogin,
-            gitHubRepo = gitHubUserRepository,
-            schedulers = schedulers,
-            router = router
-        )
+        viewModelFactory.create(userLogin = userLogin)
     }
 
     private val userReposAdapter by lazy(LazyThreadSafetyMode.NONE) {
@@ -54,14 +43,8 @@ class DetailsFragment : Fragment(R.layout.fragment_details), BackButtonListener 
     }
 
     override fun onAttach(context: Context) {
+        DetailComponent.build(findComponentDependencies()).inject(this)
         super.onAttach(context)
-
-        detailComponent =
-            (requireActivity().application as? App)
-                ?.applicationComponent
-                ?.gitHubUserComponent()
-                ?.build()
-                ?.also { it.inject(this) }
     }
 
     override fun onCreateView(
@@ -136,11 +119,6 @@ class DetailsFragment : Fragment(R.layout.fragment_details), BackButtonListener 
     }
 
     override fun backPressed() = viewModel.backPressed()
-
-    override fun onDestroy() {
-        super.onDestroy()
-        detailComponent = null
-    }
 
     companion object {
 

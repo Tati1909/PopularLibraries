@@ -11,16 +11,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.PagingData
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.popularlibraries.App
 import com.example.popularlibraries.R
+import com.example.popularlibraries.base.di.findComponentDependencies
 import com.example.popularlibraries.databinding.FragmentUsersBinding
 import com.example.popularlibraries.model.datasource.GithubUser
-import com.example.popularlibraries.model.di.components.UsersComponent
-import com.example.popularlibraries.model.repository.GithubUsersRepository
 import com.example.popularlibraries.navigation.BackButtonListener
-import com.example.popularlibraries.scheduler.Schedulers
+import com.example.popularlibraries.view.users.di.UsersComponent
 import com.example.popularlibraries.viewmodel.lazyViewModel
-import com.github.terrakok.cicerone.Router
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -28,18 +25,10 @@ import javax.inject.Inject
 
 class UsersFragment : Fragment(R.layout.fragment_users), BackButtonListener {
 
-    @Inject lateinit var router: Router
-    @Inject lateinit var schedulers: Schedulers
-    @Inject lateinit var gitHubUserRepository: GithubUsersRepository
+    @Inject lateinit var viewModelFactory: UsersViewModel.Factory
 
-    private val viewModel: UsersViewModel by lazyViewModel {
-        UsersViewModel(
-            usersRepository = gitHubUserRepository,
-            router = router
-        )
-    }
+    private val viewModel: UsersViewModel by lazyViewModel { viewModelFactory.create() }
 
-    private var usersComponent: UsersComponent? = null
     private var _binding: FragmentUsersBinding? = null
     private val binding get() = _binding!!
     private val adapter by lazy {
@@ -48,20 +37,12 @@ class UsersFragment : Fragment(R.layout.fragment_users), BackButtonListener {
 
     /**
      * Здесь мы инжектим зависимости(router, schedulers,gitHubUserRepository),
-     * т.к. MoxyPresenter начинает создаваться в onAttach.
+     * т.к. MoxyViewModel начинает создаваться в onAttach.
      * Сохраняем их в usersComponent, чтобы потом очистить в onDestroy
      */
     override fun onAttach(context: Context) {
+        UsersComponent.build(findComponentDependencies()).inject(this)
         super.onAttach(context)
-
-        usersComponent =
-            (requireActivity().application as? App)
-                ?.applicationComponent
-                ?.gitHubUsersComponent()
-                ?.build()
-                ?.also {
-                    it.inject(this@UsersFragment)
-                }
     }
 
     override fun onCreateView(
@@ -108,12 +89,6 @@ class UsersFragment : Fragment(R.layout.fragment_users), BackButtonListener {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    /** Очищаем экран с субкомпонентом */
-    override fun onDestroy() {
-        super.onDestroy()
-        usersComponent = null
     }
 
     private fun showUsers(usersFlow: Flow<PagingData<GithubUser>>) {

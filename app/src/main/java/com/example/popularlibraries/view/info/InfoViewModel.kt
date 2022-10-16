@@ -1,18 +1,23 @@
 package com.example.popularlibraries.view.info
 
-import androidx.lifecycle.ViewModel
+import com.example.popularlibraries.base.BaseViewModel
 import com.example.popularlibraries.model.entity.GitHubUserRepoInfoEntity
 import com.example.popularlibraries.model.repository.GithubUsersRepository
 import com.example.popularlibraries.scheduler.Schedulers
+import com.github.terrakok.cicerone.Router
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.plusAssign
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class InfoViewModel(
+class InfoViewModel @AssistedInject constructor(
     private val gitHubUsersRepository: GithubUsersRepository,
-    private val repositoryUrl: String?,
+    @Assisted private val repositoryUrl: String?,
     private val schedulers: Schedulers,
-) : ViewModel() {
+    router: Router
+) : BaseViewModel(router) {
 
     private val disposables = CompositeDisposable()
     val loading = MutableStateFlow(true)
@@ -47,5 +52,11 @@ class InfoViewModel(
     override fun onCleared() {
         disposables.dispose()
         super.onCleared()
+    }
+
+    @AssistedFactory
+    interface Factory {
+
+        fun create(repositoryUrl: String): InfoViewModel
     }
 }
