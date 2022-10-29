@@ -9,49 +9,32 @@ import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import com.example.popularlibraries.App
 import com.example.popularlibraries.R
 import com.example.popularlibraries.base.collectNotEmptyWhenStarted
 import com.example.popularlibraries.base.collectNotNullWhenStarted
 import com.example.popularlibraries.base.collectTrueWhenStarted
 import com.example.popularlibraries.base.collectWhenStarted
+import com.example.popularlibraries.base.di.findComponentDependencies
 import com.example.popularlibraries.databinding.FragmentInfoBinding
-import com.example.popularlibraries.model.di.components.InfoComponent
 import com.example.popularlibraries.model.entity.GitHubUserRepoInfoEntity
-import com.example.popularlibraries.model.repository.GithubUsersRepository
-import com.example.popularlibraries.scheduler.Schedulers
+import com.example.popularlibraries.view.info.di.InfoComponent
 import com.example.popularlibraries.viewmodel.lazyViewModel
 import javax.inject.Inject
 
 class InfoFragment : Fragment(R.layout.fragment_info) {
 
-    @Inject lateinit var schedulers: Schedulers
-    @Inject lateinit var userRepository: GithubUsersRepository
-    private var infoComponent: InfoComponent? = null
+    @Inject lateinit var viewModelFactory: InfoViewModel.Factory
     private var _binding: FragmentInfoBinding? = null
     private val binding get() = _binding!!
 
     //получаем наш аргумент
     private val repositoryUrl: String by lazy { arguments?.getString(ARG_REPO_URL).orEmpty() }
 
-    /** repositoryUrl - передаем ссылку на репозиторий из bundle презентеру. */
-    val viewModel: InfoViewModel by lazyViewModel {
-        InfoViewModel(
-            gitHubUsersRepository = userRepository,
-            repositoryUrl = repositoryUrl,
-            schedulers = schedulers
-        )
-    }
+    private val viewModel: InfoViewModel by lazyViewModel { viewModelFactory.create(repositoryUrl) }
 
     override fun onAttach(context: Context) {
+        InfoComponent.build(findComponentDependencies()).inject(this)
         super.onAttach(context)
-
-        infoComponent =
-            (requireActivity().application as? App)
-                ?.applicationComponent
-                ?.gitHubInfoComponent()
-                ?.build()
-                ?.also { it.inject(this) }
     }
 
     override fun onCreateView(
@@ -72,11 +55,6 @@ class InfoFragment : Fragment(R.layout.fragment_info) {
             showRepoNotFound()
             viewModel.onRepositoryNotFoundShowed()
         }
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        infoComponent = null
     }
 
     private fun showRepoInfo(gitHubUserRepoInfoEntity: GitHubUserRepoInfoEntity) {

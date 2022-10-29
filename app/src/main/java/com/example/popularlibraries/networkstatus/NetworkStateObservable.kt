@@ -84,6 +84,4 @@ class NetworkStateObservable(private val context: Context) : Observable<NetworkS
         override fun isDisposed(): Boolean = disposable.isDisposed
 
     }
-
-
 }

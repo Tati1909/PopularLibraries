@@ -1,23 +1,27 @@
 package com.example.popularlibraries.view.details
 
-import androidx.lifecycle.ViewModel
+import com.example.popularlibraries.base.BaseViewModel
 import com.example.popularlibraries.model.entity.GitHubUserEntity
 import com.example.popularlibraries.model.entity.GitHubUserRepoEntity
 import com.example.popularlibraries.model.repository.GithubUsersRepository
-import com.example.popularlibraries.navigation.InfoScreen
+import com.example.popularlibraries.navigation.InfoStarter
 import com.example.popularlibraries.scheduler.Schedulers
 import com.github.terrakok.cicerone.Router
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedFactory
+import dagger.assisted.AssistedInject
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.plusAssign
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class DetailsViewModel(
-    private val userLogin: String,
+class DetailsViewModel @AssistedInject constructor(
+    @Assisted private val userLogin: String,
     private val gitHubRepo: GithubUsersRepository,
     //Schedulers - наш интерфейс
     private val schedulers: Schedulers,
-    private val router: Router
-) : ViewModel() {
+    private val infoStarter: InfoStarter,
+    router: Router
+) : BaseViewModel(router) {
 
     //CompositeDisposable позволяет отменять наборы цепочек
     //для операций add(Disposable), remove(Disposable) и delete(Disposable).
@@ -118,7 +122,7 @@ class DetailsViewModel(
     //который в свою очередь создает InfoFragment и ложит ссылку репозитория пользователя в корзину
      */
     private fun displayUser(repoUrl: String) {
-        router.navigateTo(InfoScreen(repoUrl).create())
+        router.navigateTo(infoStarter.info(repoUrl))
     }
 
     /**Для обработки нажатия клавиши «Назад» добавляем функцию backPressed(). Она возвращает
@@ -136,5 +140,11 @@ class DetailsViewModel(
 
     fun onReposNotFoundShowed() {
         reposNotFoundShowed.value = false
+    }
+
+    @AssistedFactory
+    interface Factory {
+
+        fun create(userLogin: String): DetailsViewModel
     }
 }
