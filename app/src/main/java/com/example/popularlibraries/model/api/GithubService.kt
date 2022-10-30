@@ -9,10 +9,10 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 import retrofit2.http.Url
 
-//интерфейс GithubApi определяет, как Retrofit взаимодействует с веб-сервером с помощью HTTP-запросов.
+/** Интерфейс GithubApi определяет, как Retrofit взаимодействует с веб-сервером с помощью HTTP-запросов. */
 interface GithubService {
 
-    //получаем список пользователей и указываем конечную точку для этого метода веб-службы - /users.
+    /** получаем список пользователей и указываем конечную точку для этого метода сервера - /users. */
     @GET("/users")
     suspend fun getUsers(
         @Query("Page") page: Int,
@@ -20,25 +20,15 @@ interface GithubService {
         @Query("since") since: Int? = null
     ): List<GithubUser>
 
-    //Maybe
-    //получаем 1 пользователя
+    /** получаем 1 пользователя */
     @GET("/users/{login}")
-    fun getUserByLogin(@Path("login") login: String): Maybe<GithubUser>
-
-    //Maybe
-    //получаем 1 пользователя
-    @GET("/users/{login}")
-    suspend fun getUserByLoginS(@Path("login") login: String): GithubUser
-
-    //получаем список репозиториев 1 пользователя
-    @GET
-    fun getUserRepositories(@Url repositoriesUrl: String): Maybe<List<GitHubUserRepo>>
+    suspend fun getUserByLogin(@Path("login") login: String): GithubUser
 
     /** получаем список репозиториев 1 пользователя */
     @GET
-    suspend fun getUserRepositoriesS(@Url repositoriesUrl: String): List<GitHubUserRepo>
+    suspend fun getUserRepositories(@Url repositoriesUrl: String): List<GitHubUserRepo>
 
-    //получаем информацию о выбранном репозитории пользователя
+    /** получаем информацию о выбранном репозитории пользователя */
     @GET
     fun getUserRepositoryInfo(@Url repositoryUrl: String): Maybe<GitHubUserRepoInfo>
 }

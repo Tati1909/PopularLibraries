@@ -27,33 +27,31 @@ class GithubUsersRepositoryImpl @Inject constructor(
     /**получаем пользователя в DetailsFragment по его логину
     Если наш кеш не пустой, то сначала берем из него данные
      */
-    override fun getUserByLogin(login: String): Observable<GithubUser> =
+    /*override fun getUserByLogin(login: String): Observable<GithubUser> =
         Observable.merge(
             cache.getUserByLogin(login).toObservable(),
             cloud.getUserByLogin(login).flatMap { githubUser ->
                 cache.insertUser(githubUser).toMaybe()
             }
                 .toObservable()
-        )
+        )*/
 
-    override suspend fun getUserByLoginS(login: String): GithubUser {
-        return cloud.getUserByLoginS(login)
+    override suspend fun getUserByLogin(login: String): GithubUser {
+        return cloud.getUserByLogin(login)
     }
 
-    /**
-     * получаем список репозиториев в DetailsFragment
-     */
-    override fun getUserRepositories(repositoriesUrl: String): Observable<List<GitHubUserRepo>> =
+    /** получаем список репозиториев в DetailsFragment */
+    /*override fun getUserRepositories(repositoriesUrl: String): Observable<List<GitHubUserRepo>> =
         Observable.merge(
             cache.getUserRepositories(repositoriesUrl).toObservable(),
             cloud.getUserRepositories(repositoriesUrl).flatMap { listGitHubUserRepo ->
                 cache.insertRepositories(repositoriesUrl, listGitHubUserRepo).toMaybe()
             }
                 .toObservable()
-        )
+        )*/
 
-    override suspend fun getUserRepositoriesS(repositoriesUrl: String): List<GitHubUserRepo> {
-        return cloud.getUserRepositoriesS(repositoriesUrl)
+    override suspend fun getUserRepositories(repositoriesUrl: String): List<GitHubUserRepo> {
+        return cloud.getUserRepositories(repositoriesUrl)
     }
 
     /**

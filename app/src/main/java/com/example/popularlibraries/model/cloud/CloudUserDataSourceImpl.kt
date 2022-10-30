@@ -15,20 +15,12 @@ class CloudUserDataSourceImpl @Inject constructor(
         return githubService.getUsers(page, count)
     }
 
-    override fun getUserByLogin(userId: String): Maybe<GithubUser> {
-        return githubService
-            .getUserByLogin(userId)
+    override suspend fun getUserByLogin(userId: String): GithubUser {
+        return githubService.getUserByLogin(userId)
     }
 
-    override suspend fun getUserByLoginS(userId: String): GithubUser {
-        return githubService.getUserByLoginS(userId)
-    }
-
-    override fun getUserRepositories(repositoriesUrl: String): Maybe<List<GitHubUserRepo>> =
-        githubService.getUserRepositories(repositoriesUrl)
-
-    override suspend fun getUserRepositoriesS(repositoriesUrl: String): List<GitHubUserRepo> {
-        return githubService.getUserRepositoriesS(repositoriesUrl)
+    override suspend fun getUserRepositories(repositoriesUrl: String): List<GitHubUserRepo> {
+        return githubService.getUserRepositories(repositoriesUrl)
     }
 
     override fun getUserRepositoryInfo(repositoryUrl: String): Maybe<GitHubUserRepoInfo> =

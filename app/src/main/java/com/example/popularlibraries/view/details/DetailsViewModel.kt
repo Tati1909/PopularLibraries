@@ -32,10 +32,10 @@ class DetailsViewModel @AssistedInject constructor(
 
     private fun loadData() {
         tryLaunch {
-            val user: GitHubUserEntity = map(gitHubRepository.getUserByLoginS(userLogin))
+            val user: GitHubUserEntity = map(gitHubRepository.getUserByLogin(userLogin))
             val repositories: List<GitHubUserRepoEntity> =
                 if (user.repositoriesUrl != null) {
-                    gitHubRepository.getUserRepositoriesS(user.repositoriesUrl).map(GitHubUserRepoEntity.Mapper::map)
+                    gitHubRepository.getUserRepositories(user.repositoriesUrl).map(GitHubUserRepoEntity.Mapper::map)
                 } else {
                     throw IllegalStateException("repositoriesUrl should not be null")
                 }

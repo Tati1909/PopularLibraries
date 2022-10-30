@@ -69,12 +69,18 @@ class UsersFragment : Fragment(R.layout.fragment_users), BackButtonListener {
             is UiState.Content -> {
                 showUsers(state.data)
             }
+            is UiState.Loading -> {
+                binding.progressBar.isVisible = true
+            }
         }
     }
 
     private fun hideAllStates(excludeState: UiState<*>) {
         if (excludeState !is UiState.Content) {
             binding.swipeRefreshLayout.isVisible = false
+        }
+        if (excludeState !is UiState.Loading) {
+            binding.progressBar.isVisible = false
         }
     }
 

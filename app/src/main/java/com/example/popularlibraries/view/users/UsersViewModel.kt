@@ -27,6 +27,7 @@ class UsersViewModel @AssistedInject constructor(
     router: Router
 ) : BaseViewModel(router) {
 
+    var state = MutableStateFlow<UiState<Flow<PagingData<GithubUser>>>>(UiState.Loading)
     var users: Flow<PagingData<GithubUser>> =
         Pager(config = PagingConfig(pageSize = USER_PAGE_SIZE)) {
             GithubUsersPagingSource(usersRepository)
@@ -36,12 +37,15 @@ class UsersViewModel @AssistedInject constructor(
             .catch { throwable ->
                 state.value = UiState.Error(throwable.message ?: resourcesProvider.getString(R.string.error_view))
             }
-    var state = MutableStateFlow<UiState<Flow<PagingData<GithubUser>>>>(UiState.Content(users))
+
+    init {
+        state.value = UiState.Content(users)
+    }
 
     fun onUserClicked(user: GithubUser) =
         router.navigateTo(detailsStarter.details(user))
 
-    /**Для обработки нажатия клавиши «Назад» добавляем функцию backPressed(). Она возвращает
+    /** Для обработки нажатия клавиши «Назад» добавляем функцию backPressed(). Она возвращает
     Boolean, где мы передаём обработку выхода с экрана роутеру. Вообще, функции Presenter, согласно
     парадигме, не должны ничего возвращать, но в нашем случае приходится идти на компромисс из-за
     недостатков фреймворка.*/
