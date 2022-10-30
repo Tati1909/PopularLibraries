@@ -23,7 +23,7 @@ import com.example.popularlibraries.model.storage.dao.GitHubUserRepoInfoDao
         GithubUser::class,
         GitHubUserRepo::class,
         GitHubUserRepoInfo::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class GitHubDatabase : RoomDatabase() {

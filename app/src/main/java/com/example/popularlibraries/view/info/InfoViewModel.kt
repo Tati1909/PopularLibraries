@@ -1,28 +1,26 @@
 package com.example.popularlibraries.view.info
 
+import com.example.popularlibraries.R
 import com.example.popularlibraries.base.BaseViewModel
+import com.example.popularlibraries.base.resourcesprovider.ResourcesProvider
 import com.example.popularlibraries.model.entity.GitHubUserRepoInfoEntity
+import com.example.popularlibraries.model.entity.GitHubUserRepoInfoEntity.Mapper.map
 import com.example.popularlibraries.model.repository.GithubUsersRepository
-import com.example.popularlibraries.scheduler.Schedulers
 import com.github.terrakok.cicerone.Router
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import io.reactivex.rxjava3.disposables.CompositeDisposable
-import io.reactivex.rxjava3.kotlin.plusAssign
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class InfoViewModel @AssistedInject constructor(
     private val gitHubUsersRepository: GithubUsersRepository,
     @Assisted private val repositoryUrl: String?,
-    private val schedulers: Schedulers,
+    private val resourcesProvider: ResourcesProvider,
     router: Router
 ) : BaseViewModel(router) {
 
-    private val disposables = CompositeDisposable()
     val loading = MutableStateFlow(true)
     val repositoryInfo = MutableStateFlow<GitHubUserRepoInfoEntity?>(null)
-    val repositoryNotFoundShowed = MutableStateFlow(false)
     val error = MutableStateFlow("")
 
     init {
@@ -30,28 +28,18 @@ class InfoViewModel @AssistedInject constructor(
     }
 
     private fun loadData() {
-        repositoryUrl?.let {
-            disposables +=
-                gitHubUsersRepository.getUserRepositoryInfo(it)
-                    .map(GitHubUserRepoInfoEntity.Mapper::map)
-                    .observeOn(schedulers.main())
-                    .subscribeOn(schedulers.background())
-                    .subscribe { infoEntity ->
-                        repositoryInfo.value = infoEntity
-                        error.value = "Ошибка соединения с сервером. Повторите попытку позже"
-                        repositoryNotFoundShowed.value = true
-                    }
-        }
-        loading.value = false
-    }
+        tryLaunch {
+            val userRepositoryInfo = map(
+                gitHubUsersRepository.getUserRepositoryInfo(
+                    repositoryUrl ?: throw IllegalStateException("repositoriesUrl should not be null")
+                )
+            )
+            repositoryInfo.value = userRepositoryInfo
+            loading.value = false
+        }.catch { throwable ->
+            error.value = throwable.message ?: resourcesProvider.getString(R.string.error_view)
+        }.start()
 
-    fun onRepositoryNotFoundShowed() {
-        repositoryNotFoundShowed.value = false
-    }
-
-    override fun onCleared() {
-        disposables.dispose()
-        super.onCleared()
     }
 
     @AssistedFactory

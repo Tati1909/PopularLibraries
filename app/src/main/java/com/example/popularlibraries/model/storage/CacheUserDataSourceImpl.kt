@@ -3,17 +3,14 @@ package com.example.popularlibraries.model.storage
 import com.example.popularlibraries.model.datasource.GitHubUserRepo
 import com.example.popularlibraries.model.datasource.GitHubUserRepoInfo
 import com.example.popularlibraries.model.datasource.GithubUser
-import io.reactivex.rxjava3.core.Maybe
-import io.reactivex.rxjava3.core.Single
 import javax.inject.Inject
 
 class CacheUserDataSourceImpl @Inject constructor(
     private val database: GitHubDatabase
 ) : CacheUserDataSource {
 
-    /**получаем список пользователей
-     */
-    override fun getUsers(): Single<List<GithubUser>> {
+    /** получаем список пользователей */
+    override suspend fun getUsers(): List<GithubUser> {
         return database
             .gitHubUserDao()
             .getUsers()
@@ -23,18 +20,14 @@ class CacheUserDataSourceImpl @Inject constructor(
     firstOrNull возвращает или элемент списка, соответствующий заданному предикату,
     или null, если элемент не был найден.
      */
-    override fun getUserByLogin(login: String): Maybe<GithubUser> {
-        return database
-            .gitHubUserDao()
-            .getUserByLogin(login)
+    override suspend fun getUserByLogin(login: String): GithubUser {
+        return database.gitHubUserDao().getUserByLogin(login)
     }
 
-    override fun getUserRepositories(repositoriesUrl: String): Maybe<List<GitHubUserRepo>> =
-        database
-            .gitHubUserRepoDao()
-            .getUserRepositories(repositoriesUrl)
+    override suspend fun getUserRepositories(repositoriesUrl: String): List<GitHubUserRepo> =
+        database.gitHubUserRepoDao().getUserRepositories(repositoriesUrl)
 
-    override fun getUserRepositoryInfo(repositoryUrl: String): Maybe<GitHubUserRepoInfo> =
+    override suspend fun getUserRepositoryInfo(repositoryUrl: String): GitHubUserRepoInfo =
         database
             .gitHubUserRepoInfoDao()
             .getUserRepositoryInfo(repositoryUrl)
@@ -42,70 +35,51 @@ class CacheUserDataSourceImpl @Inject constructor(
     /**
      * Обновить
      */
-    override fun update(user: GithubUser): Single<GithubUser> {
+    override suspend fun update(user: GithubUser): GithubUser {
 
-        return database
-            .gitHubUserDao()
-            .update(user)
-            .andThen(
-                getUserByLogin(user.login)
-                    .toSingle()
-            )
+        database.gitHubUserDao().update(user)
+        return database.gitHubUserDao().getUserByLogin(user.login)
     }
 
     /**
      * Вставить список пользователей в таблицу github_users
      */
-    override fun insertListUsers(users: List<GithubUser>): Single<List<GithubUser>> {
-
-        return database
-            .gitHubUserDao()
-            .insertUsers(users)
-            .andThen(getUsers())
+    override suspend fun insertListUsers(users: List<GithubUser>): List<GithubUser> {
+        database.gitHubUserDao().insertUsers(users)
+        return database.gitHubUserDao().getUsers()
     }
 
     /**
      * Вставить данные 1 пользователя в таблицу github_users_repo
      */
-    override fun insertUser(user: GithubUser): Single<GithubUser> {
+    override suspend fun insertUser(user: GithubUser): GithubUser {
 
-        return database
-            .gitHubUserDao()
-            .insertUser(user)
-            .andThen(getUserByLogin(user.login))
-            .toSingle()
+        database.gitHubUserDao().insertUser(user)
+        return database.gitHubUserDao().getUserByLogin(user.login)
     }
 
-    /**
-     * Вставить репозитории 1 пользователя в таблицу github_users_repo
-     */
-    override fun insertRepositories(
+    /** Вставить репозитории 1 пользователя в таблицу github_users_repo */
+    override suspend fun insertRepositories(
         repositoriesUrl: String,
         userRepositories: List<GitHubUserRepo>
-    ): Single<List<GitHubUserRepo>> {
+    ): List<GitHubUserRepo> {
         return userRepositories
             .map { gitHubUseRepo -> gitHubUseRepo.apply { reposUrl = repositoriesUrl } }
             .let { gitHubUsers ->
-                database
-                    .gitHubUserRepoDao()
-                    .insert(gitHubUsers)
+                database.gitHubUserRepoDao().insert(gitHubUsers)
+                database.gitHubUserRepoDao().getUserRepositories(repositoriesUrl)
             }
-            .andThen(getUserRepositories(repositoriesUrl))
-            .toSingle()
     }
 
-    /**
-     * Вставить инфо о репозитории 1 пользователя в таблицу github_users_repo_info
-     */
-    override fun insertUserRepoInfo(
-        repositoryUrl: String, gitHubUserRepoInfo: GitHubUserRepoInfo
-    ): Single<GitHubUserRepoInfo> {
+    /** Вставить инфо о репозитории 1 пользователя в таблицу github_users_repo_info */
+    override suspend fun insertUserRepoInfo(
+        repositoryUrl: String,
+        gitHubUserRepoInfo: GitHubUserRepoInfo
+    ): GitHubUserRepoInfo {
 
         gitHubUserRepoInfo.repoUrl = repositoryUrl
+        database.gitHubUserRepoInfoDao().insert(gitHubUserRepoInfo)
         return database
-            .gitHubUserRepoInfoDao()
-            .insert(gitHubUserRepoInfo)
-            .andThen(getUserRepositoryInfo(repositoryUrl))
-            .toSingle()
+            .gitHubUserRepoInfoDao().getUserRepositoryInfo(repositoryUrl)
     }
 }

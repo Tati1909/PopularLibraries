@@ -10,7 +10,6 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.PagingData
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.popularlibraries.R
 import com.example.popularlibraries.base.di.findComponentDependencies
 import com.example.popularlibraries.databinding.FragmentUsersBinding
@@ -35,11 +34,7 @@ class UsersFragment : Fragment(R.layout.fragment_users), BackButtonListener {
         UsersAdapter(viewModel::onUserClicked)
     }
 
-    /**
-     * Здесь мы инжектим зависимости(router, schedulers,gitHubUserRepository),
-     * т.к. MoxyViewModel начинает создаваться в onAttach.
-     * Сохраняем их в usersComponent, чтобы потом очистить в onDestroy
-     */
+    /** Здесь мы инжектим зависимости(router,gitHubUserRepository). */
     override fun onAttach(context: Context) {
         UsersComponent.build(findComponentDependencies()).inject(this)
         super.onAttach(context)
@@ -57,11 +52,10 @@ class UsersFragment : Fragment(R.layout.fragment_users), BackButtonListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.usersRecyclerview.layoutManager = LinearLayoutManager(context)
         binding.usersRecyclerview.adapter = adapter.withLoadStateFooter(FooterUsersAdapter())
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
-            viewModel.state.collect {
-                showState(it)
+            viewModel.state.collect { uiState ->
+                showState(uiState)
             }
         }
     }
@@ -75,12 +69,18 @@ class UsersFragment : Fragment(R.layout.fragment_users), BackButtonListener {
             is UiState.Content -> {
                 showUsers(state.data)
             }
+            is UiState.Loading -> {
+                binding.progressBar.isVisible = true
+            }
         }
     }
 
     private fun hideAllStates(excludeState: UiState<*>) {
         if (excludeState !is UiState.Content) {
             binding.swipeRefreshLayout.isVisible = false
+        }
+        if (excludeState !is UiState.Loading) {
+            binding.progressBar.isVisible = false
         }
     }
 
