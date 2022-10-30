@@ -1,6 +1,7 @@
 package com.example.popularlibraries.view.users.di
 
 import com.example.popularlibraries.base.di.ComponentDependencies
+import com.example.popularlibraries.base.resourcesprovider.ResourcesProvider
 import com.example.popularlibraries.model.cloud.CloudUserDataSource
 import com.example.popularlibraries.model.repository.GithubUsersRepository
 import com.example.popularlibraries.model.storage.CacheUserDataSource
@@ -16,4 +17,5 @@ interface UsersDependencies : ComponentDependencies {
     fun router(): Router
     fun schedulers(): Schedulers
     fun detailsStarter(): DetailsStarter
+    fun resourcesProvider(): ResourcesProvider
 }

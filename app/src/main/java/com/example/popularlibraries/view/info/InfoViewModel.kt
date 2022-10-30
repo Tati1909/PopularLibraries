@@ -1,6 +1,8 @@
 package com.example.popularlibraries.view.info
 
+import com.example.popularlibraries.R
 import com.example.popularlibraries.base.BaseViewModel
+import com.example.popularlibraries.base.resourcesprovider.ResourcesProvider
 import com.example.popularlibraries.model.entity.GitHubUserRepoInfoEntity
 import com.example.popularlibraries.model.repository.GithubUsersRepository
 import com.example.popularlibraries.scheduler.Schedulers
@@ -16,6 +18,7 @@ class InfoViewModel @AssistedInject constructor(
     private val gitHubUsersRepository: GithubUsersRepository,
     @Assisted private val repositoryUrl: String?,
     private val schedulers: Schedulers,
+    private val resourcesProvider: ResourcesProvider,
     router: Router
 ) : BaseViewModel(router) {
 
@@ -38,7 +41,7 @@ class InfoViewModel @AssistedInject constructor(
                     .subscribeOn(schedulers.background())
                     .subscribe { infoEntity ->
                         repositoryInfo.value = infoEntity
-                        error.value = "Ошибка соединения с сервером. Повторите попытку позже"
+                        error.value = resourcesProvider.getString(R.string.error_view)
                         repositoryNotFoundShowed.value = true
                     }
         }

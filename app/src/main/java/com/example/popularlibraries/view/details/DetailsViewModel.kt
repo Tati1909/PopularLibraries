@@ -1,6 +1,8 @@
 package com.example.popularlibraries.view.details
 
+import com.example.popularlibraries.R
 import com.example.popularlibraries.base.BaseViewModel
+import com.example.popularlibraries.base.resourcesprovider.ResourcesProvider
 import com.example.popularlibraries.model.entity.GitHubUserEntity
 import com.example.popularlibraries.model.entity.GitHubUserRepoEntity
 import com.example.popularlibraries.model.repository.GithubUsersRepository
@@ -20,6 +22,7 @@ class DetailsViewModel @AssistedInject constructor(
     //Schedulers - наш интерфейс
     private val schedulers: Schedulers,
     private val infoStarter: InfoStarter,
+    private val resourcesProvider: ResourcesProvider,
     router: Router
 ) : BaseViewModel(router) {
 
@@ -78,7 +81,7 @@ class DetailsViewModel @AssistedInject constructor(
     }
 
     private fun doOnErrorLoadUserLoginData(throwable: Throwable) {
-        error.value = throwable.message ?: "Ошибка соединения с сервером. Повторите попытку позже"
+        error.value = throwable.message ?: resourcesProvider.getString(R.string.error_view)
     }
 
     private fun doOnCompleteLoadUserLoginData() {
@@ -108,7 +111,7 @@ class DetailsViewModel @AssistedInject constructor(
     }
 
     private fun doOnErrorLoadUserReposData(error: Throwable) {
-        this.error.value = error.message ?: "Ошибка соединения с сервером. Повторите попытку позже"
+        this.error.value = error.message ?: resourcesProvider.getString(R.string.error_view)
         loading.value = false
     }
 

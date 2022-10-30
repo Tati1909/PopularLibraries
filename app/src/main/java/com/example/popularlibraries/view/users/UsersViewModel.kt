@@ -5,7 +5,9 @@ import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.example.popularlibraries.R
 import com.example.popularlibraries.base.BaseViewModel
+import com.example.popularlibraries.base.resourcesprovider.ResourcesProvider
 import com.example.popularlibraries.model.datasource.GithubUser
 import com.example.popularlibraries.model.repository.GithubUsersPagingSource
 import com.example.popularlibraries.model.repository.GithubUsersRepository
@@ -21,6 +23,7 @@ import kotlinx.coroutines.flow.catch
 class UsersViewModel @AssistedInject constructor(
     private val usersRepository: GithubUsersRepository,
     private val detailsStarter: DetailsStarter,
+    private val resourcesProvider: ResourcesProvider,
     router: Router
 ) : BaseViewModel(router) {
 
@@ -31,7 +34,7 @@ class UsersViewModel @AssistedInject constructor(
             .flow
             .cachedIn(viewModelScope)
             .catch { throwable ->
-                state.value = UiState.Error(throwable.message ?: "Ошибка сервера. Мы уже работаем над ее исправлением")
+                state.value = UiState.Error(throwable.message ?: resourcesProvider.getString(R.string.error_view))
             }
     var state = MutableStateFlow<UiState<Flow<PagingData<GithubUser>>>>(UiState.Content(users))
 
