@@ -23,48 +23,24 @@ class GithubUsersRepositoryImpl @Inject constructor(
         return users
     }
 
-    /**получаем пользователя в DetailsFragment по его логину
-    Если наш кеш не пустой, то сначала берем из него данные
-     */
-    /*override fun getUserByLogin(login: String): Observable<GithubUser> =
-        Observable.merge(
-            cache.getUserByLogin(login).toObservable(),
-            cloud.getUserByLogin(login).flatMap { githubUser ->
-                cache.insertUser(githubUser).toMaybe()
-            }
-                .toObservable()
-        )*/
-
+    /** получаем пользователя в DetailsFragment по его логину */
     override suspend fun getUserByLogin(login: String): GithubUser {
-        return cloud.getUserByLogin(login)
+        return cloud.getUserByLogin(login).also { githubUser ->
+            cache.insertUser(githubUser)
+        }
     }
 
     /** получаем список репозиториев в DetailsFragment */
-    /*override fun getUserRepositories(repositoriesUrl: String): Observable<List<GitHubUserRepo>> =
-        Observable.merge(
-            cache.getUserRepositories(repositoriesUrl).toObservable(),
-            cloud.getUserRepositories(repositoriesUrl).flatMap { listGitHubUserRepo ->
-                cache.insertRepositories(repositoriesUrl, listGitHubUserRepo).toMaybe()
-            }
-                .toObservable()
-        )*/
-
     override suspend fun getUserRepositories(repositoryUrl: String): List<GitHubUserRepo> {
-        return cloud.getUserRepositories(repositoryUrl)
+        return cloud.getUserRepositories(repositoryUrl).also { listGitHubUserRepo ->
+            cache.insertRepositories(repositoryUrl, listGitHubUserRepo)
+        }
     }
 
-    /**
-     * получаем информацию о репозитории пользователя в InfoFragment
-     */
+    /** получаем информацию о репозитории пользователя в InfoFragment */
     override suspend fun getUserRepositoryInfo(repositoryUrl: String): GitHubUserRepoInfo {
-        return cloud.getUserRepositoryInfo(repositoryUrl)
+        return cloud.getUserRepositoryInfo(repositoryUrl).also { githubUserRepoInfo ->
+            cache.insertUserRepoInfo(repositoryUrl, githubUserRepoInfo)
+        }
     }
-    /* Observable.merge(
-         cache.getUserRepositoryInfo(repositoryUrl).toObservable(),
-         cloud.getUserRepositoryInfo(repositoryUrl).toObservable()
-             .flatMap { githubUserRepoInfo ->
-                 cache.insertUserRepoInfo(repositoryUrl, githubUserRepoInfo)
-                     .toObservable()
-             }
-     )*/
 }
