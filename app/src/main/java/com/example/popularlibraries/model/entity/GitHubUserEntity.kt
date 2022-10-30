@@ -6,7 +6,7 @@ data class GitHubUserEntity(
     val userId: Long,
     val login: String,
     val avatarUrl: String?,
-    val userReposUrl: String?
+    val repositoriesUrl: String?
 ) {
     object Mapper {
         fun map(user: GithubUser): GitHubUserEntity =

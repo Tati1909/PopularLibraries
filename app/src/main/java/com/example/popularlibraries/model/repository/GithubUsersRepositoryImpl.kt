@@ -36,6 +36,10 @@ class GithubUsersRepositoryImpl @Inject constructor(
                 .toObservable()
         )
 
+    override suspend fun getUserByLoginS(login: String): GithubUser {
+        return cloud.getUserByLoginS(login)
+    }
+
     /**
      * получаем список репозиториев в DetailsFragment
      */
@@ -47,6 +51,10 @@ class GithubUsersRepositoryImpl @Inject constructor(
             }
                 .toObservable()
         )
+
+    override suspend fun getUserRepositoriesS(repositoriesUrl: String): List<GitHubUserRepo> {
+        return cloud.getUserRepositoriesS(repositoriesUrl)
+    }
 
     /**
      * получаем информацию о репозитории пользователя в InfoFragment

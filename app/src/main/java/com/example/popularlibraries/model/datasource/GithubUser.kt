@@ -14,12 +14,8 @@ import com.google.gson.annotations.SerializedName
     indices = [Index(value = ["repos_url"], unique = true)]
 )
 data class GithubUser(
-    @ColumnInfo(name = "id")
-    @SerializedName("id") val id: Long,
-    @ColumnInfo(name = "login")
-    @SerializedName("login") val login: String,
-    @ColumnInfo(name = "avatar")
-    @SerializedName("avatar_url") val avatarUrl: String,
-    @ColumnInfo(name = "repos_url")
-    @SerializedName("repos_url") val reposUrl: String
+    @ColumnInfo(name = "id") @SerializedName("id") val id: Long,
+    @ColumnInfo(name = "login") @SerializedName("login") val login: String,
+    @ColumnInfo(name = "avatar") @SerializedName("avatar_url") val avatarUrl: String,
+    @ColumnInfo(name = "repos_url") @SerializedName("repos_url") val reposUrl: String
 )

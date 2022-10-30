@@ -6,7 +6,7 @@ import com.example.popularlibraries.model.datasource.GitHubUserRepo
 data class GitHubUserRepoEntity(
     val id: Int,
     val name: String,
-    val repoUrl: String
+    val repositoryUrl: String
 ) {
     object Mapper {
         fun map(repo: GitHubUserRepo): GitHubUserRepoEntity =

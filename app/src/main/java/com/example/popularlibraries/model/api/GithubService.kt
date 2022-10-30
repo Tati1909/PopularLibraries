@@ -25,9 +25,18 @@ interface GithubService {
     @GET("/users/{login}")
     fun getUserByLogin(@Path("login") login: String): Maybe<GithubUser>
 
+    //Maybe
+    //получаем 1 пользователя
+    @GET("/users/{login}")
+    suspend fun getUserByLoginS(@Path("login") login: String): GithubUser
+
     //получаем список репозиториев 1 пользователя
     @GET
     fun getUserRepositories(@Url repositoriesUrl: String): Maybe<List<GitHubUserRepo>>
+
+    /** получаем список репозиториев 1 пользователя */
+    @GET
+    suspend fun getUserRepositoriesS(@Url repositoriesUrl: String): List<GitHubUserRepo>
 
     //получаем информацию о выбранном репозитории пользователя
     @GET

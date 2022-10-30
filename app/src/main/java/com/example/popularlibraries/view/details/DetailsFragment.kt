@@ -7,12 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.example.popularlibraries.R
-import com.example.popularlibraries.base.collectNotEmptyListWhenStarted
 import com.example.popularlibraries.base.collectNotEmptyWhenStarted
 import com.example.popularlibraries.base.collectNotNullWhenStarted
-import com.example.popularlibraries.base.collectTrueWhenStarted
 import com.example.popularlibraries.base.collectWhenStarted
 import com.example.popularlibraries.base.di.findComponentDependencies
 import com.example.popularlibraries.databinding.FragmentDetailsBinding
@@ -64,37 +63,23 @@ class DetailsFragment : Fragment(R.layout.fragment_details), BackButtonListener 
     }
 
     private fun initStateHandlers() {
-        collectNotNullWhenStarted(viewModel.userEntity, ::showUser)
-        collectNotEmptyListWhenStarted(viewModel.repoEntity, ::showRepos)
+        collectNotNullWhenStarted(viewModel.data) { (user: GitHubUserEntity, gitHubUserRepos: List<GitHubUserRepoEntity>) ->
+            showUser(user, gitHubUserRepos)
+        }
         collectWhenStarted(viewModel.loading, ::loadingLayoutIsVisible)
         collectNotEmptyWhenStarted(viewModel.error, ::showError)
-        collectTrueWhenStarted(viewModel.userNotFoundShowed) {
-            showUserNotFound()
-            viewModel.onUserNotFoundShowed()
-        }
-        collectTrueWhenStarted(viewModel.reposNotFoundShowed) {
-            showReposNotFound()
-            viewModel.onReposNotFoundShowed()
-        }
     }
 
-    private fun showUser(user: GitHubUserEntity) {
+    private fun showUser(user: GitHubUserEntity, gitHubUserRepos: List<GitHubUserRepoEntity>) {
         user.avatarUrl?.let { avatarUrl ->
             binding.loginUser.setStartDrawableCircleImageFromUri(avatarUrl)
         }
         binding.loginUser.text = user.login
-    }
-
-    private fun showRepos(gitHubUserRepos: List<GitHubUserRepoEntity>) {
         userReposAdapter.submitList(gitHubUserRepos)
     }
 
-    private fun loadingLayoutIsVisible(isVisible: Boolean) {
-        binding.loadingLayout.root.visibility = if (isVisible) {
-            View.VISIBLE
-        } else {
-            View.GONE
-        }
+    private fun loadingLayoutIsVisible(loading: Boolean) {
+        binding.loadingLayout.root.isVisible = loading
     }
 
     private fun showUserNotFound() {
