@@ -6,7 +6,6 @@ import com.example.popularlibraries.model.cloud.CloudUserDataSource
 import com.example.popularlibraries.model.repository.GithubUsersRepository
 import com.example.popularlibraries.model.storage.CacheUserDataSource
 import com.example.popularlibraries.navigation.DetailsStarter
-import com.example.popularlibraries.scheduler.Schedulers
 import com.github.terrakok.cicerone.Router
 
 interface UsersDependencies : ComponentDependencies {
@@ -15,7 +14,6 @@ interface UsersDependencies : ComponentDependencies {
     fun cloudUserDataSource(): CloudUserDataSource
     fun cacheUserDataSource(): CacheUserDataSource
     fun router(): Router
-    fun schedulers(): Schedulers
     fun detailsStarter(): DetailsStarter
     fun resourcesProvider(): ResourcesProvider
 }

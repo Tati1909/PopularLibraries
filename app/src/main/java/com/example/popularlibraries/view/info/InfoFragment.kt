@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment
 import com.example.popularlibraries.R
 import com.example.popularlibraries.base.collectNotEmptyWhenStarted
 import com.example.popularlibraries.base.collectNotNullWhenStarted
-import com.example.popularlibraries.base.collectTrueWhenStarted
 import com.example.popularlibraries.base.collectWhenStarted
 import com.example.popularlibraries.base.di.findComponentDependencies
 import com.example.popularlibraries.databinding.FragmentInfoBinding
@@ -51,10 +50,6 @@ class InfoFragment : Fragment(R.layout.fragment_info) {
         collectNotNullWhenStarted(viewModel.repositoryInfo, ::showRepoInfo)
         collectWhenStarted(viewModel.loading, ::toggleLoading)
         collectNotEmptyWhenStarted(viewModel.error, ::showError)
-        collectTrueWhenStarted(viewModel.repositoryNotFoundShowed) {
-            showRepoNotFound()
-            viewModel.onRepositoryNotFoundShowed()
-        }
     }
 
     private fun showRepoInfo(gitHubUserRepoInfoEntity: GitHubUserRepoInfoEntity) {
@@ -78,15 +73,6 @@ class InfoFragment : Fragment(R.layout.fragment_info) {
     private fun showError(error: String) {
         toggleLoading(false)
         Toast.makeText(requireContext(), error, Toast.LENGTH_LONG).show()
-    }
-
-    private fun showRepoNotFound() {
-        Toast.makeText(
-            requireContext(),
-            getString(R.string.user_repository_not_found_message),
-            Toast.LENGTH_LONG
-        ).show()
-        toggleLoading(false)
     }
 
     companion object {

@@ -6,9 +6,6 @@ import com.example.popularlibraries.base.di.CoreBinder
 import com.example.popularlibraries.base.di.GithubServiceModule
 import com.example.popularlibraries.base.di.NavigationModule
 import com.example.popularlibraries.base.di.RouterBinder
-import com.example.popularlibraries.scheduler.DefaultSchedulers
-import com.example.popularlibraries.scheduler.Schedulers
-import dagger.Binds
 import dagger.Module
 
 /** Наша зависимость:  APP -> Users -> Detail -> Info */
@@ -22,8 +19,4 @@ import dagger.Module
         CoreBinder::class
     ]
 )
-interface AppModule {
-
-    @Binds
-    fun provideShedulers(defaultSchedulers: DefaultSchedulers): Schedulers
-}
+interface AppModule

@@ -5,7 +5,6 @@ import com.example.popularlibraries.model.datasource.GitHubUserRepo
 import com.example.popularlibraries.model.datasource.GitHubUserRepoInfo
 import com.example.popularlibraries.model.datasource.GithubUser
 import com.example.popularlibraries.model.storage.CacheUserDataSource
-import io.reactivex.rxjava3.core.Observable
 import javax.inject.Inject
 
 /**
@@ -50,20 +49,22 @@ class GithubUsersRepositoryImpl @Inject constructor(
                 .toObservable()
         )*/
 
-    override suspend fun getUserRepositories(repositoriesUrl: String): List<GitHubUserRepo> {
-        return cloud.getUserRepositories(repositoriesUrl)
+    override suspend fun getUserRepositories(repositoryUrl: String): List<GitHubUserRepo> {
+        return cloud.getUserRepositories(repositoryUrl)
     }
 
     /**
      * получаем информацию о репозитории пользователя в InfoFragment
      */
-    override fun getUserRepositoryInfo(repositoryUrl: String): Observable<GitHubUserRepoInfo> =
-        Observable.merge(
-            cache.getUserRepositoryInfo(repositoryUrl).toObservable(),
-            cloud.getUserRepositoryInfo(repositoryUrl).toObservable()
-                .flatMap { githubUserRepoInfo ->
-                    cache.insertUserRepoInfo(repositoryUrl, githubUserRepoInfo)
-                        .toObservable()
-                }
-        )
+    override suspend fun getUserRepositoryInfo(repositoryUrl: String): GitHubUserRepoInfo {
+        return cloud.getUserRepositoryInfo(repositoryUrl)
+    }
+    /* Observable.merge(
+         cache.getUserRepositoryInfo(repositoryUrl).toObservable(),
+         cloud.getUserRepositoryInfo(repositoryUrl).toObservable()
+             .flatMap { githubUserRepoInfo ->
+                 cache.insertUserRepoInfo(repositoryUrl, githubUserRepoInfo)
+                     .toObservable()
+             }
+     )*/
 }

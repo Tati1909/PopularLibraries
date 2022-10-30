@@ -3,7 +3,6 @@ package com.example.popularlibraries.model.repository
 import com.example.popularlibraries.model.datasource.GitHubUserRepo
 import com.example.popularlibraries.model.datasource.GitHubUserRepoInfo
 import com.example.popularlibraries.model.datasource.GithubUser
-import io.reactivex.rxjava3.core.Observable
 
 interface GithubUsersRepository {
 
@@ -13,8 +12,8 @@ interface GithubUsersRepository {
     suspend fun getUserByLogin(login: String): GithubUser
 
     /** получаем список репозиториев в DetailsFragment */
-    suspend fun getUserRepositories(repositoriesUrl: String): List<GitHubUserRepo>
+    suspend fun getUserRepositories(repositoryUrl: String): List<GitHubUserRepo>
 
     /** получаем информацию о репозитории пользователя в InfoFragment */
-    fun getUserRepositoryInfo(repositoryUrl: String): Observable<GitHubUserRepoInfo>
+    suspend fun getUserRepositoryInfo(repositoryUrl: String): GitHubUserRepoInfo
 }

@@ -4,7 +4,6 @@ import com.example.popularlibraries.model.api.GithubService
 import com.example.popularlibraries.model.datasource.GitHubUserRepo
 import com.example.popularlibraries.model.datasource.GitHubUserRepoInfo
 import com.example.popularlibraries.model.datasource.GithubUser
-import io.reactivex.rxjava3.core.Maybe
 import javax.inject.Inject
 
 class CloudUserDataSourceImpl @Inject constructor(
@@ -23,6 +22,6 @@ class CloudUserDataSourceImpl @Inject constructor(
         return githubService.getUserRepositories(repositoriesUrl)
     }
 
-    override fun getUserRepositoryInfo(repositoryUrl: String): Maybe<GitHubUserRepoInfo> =
+    override suspend fun getUserRepositoryInfo(repositoryUrl: String): GitHubUserRepoInfo =
         githubService.getUserRepositoryInfo(repositoryUrl)
 }

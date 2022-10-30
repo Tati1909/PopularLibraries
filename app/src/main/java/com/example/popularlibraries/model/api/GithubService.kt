@@ -3,7 +3,6 @@ package com.example.popularlibraries.model.api
 import com.example.popularlibraries.model.datasource.GitHubUserRepo
 import com.example.popularlibraries.model.datasource.GitHubUserRepoInfo
 import com.example.popularlibraries.model.datasource.GithubUser
-import io.reactivex.rxjava3.core.Maybe
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -30,5 +29,5 @@ interface GithubService {
 
     /** получаем информацию о выбранном репозитории пользователя */
     @GET
-    fun getUserRepositoryInfo(@Url repositoryUrl: String): Maybe<GitHubUserRepoInfo>
+    suspend fun getUserRepositoryInfo(@Url repositoryUrl: String): GitHubUserRepoInfo
 }
