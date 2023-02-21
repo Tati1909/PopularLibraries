@@ -85,18 +85,16 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
     //Модуль Fragment KTX предоставляет ряд расширений для упрощения API фрагмента
     implementation "androidx.fragment:fragment-ktx:1.5.4"
+
     //Compose
-    // Material Design 3
+    implementation "io.coil-kt:coil-compose:2.1.0"
     implementation "androidx.compose.material:material:$compose_version"
-    // or skip Material Design and build directly on top of foundational components
     implementation "androidx.compose.foundation:foundation:1.3.1"
-    // or only import the main APIs for the underlying toolkit systems,
-    // such as input and measurement/layout
     implementation "androidx.compose.ui:ui:1.3.1"
-    // Android Studio Preview support
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
     implementation "androidx.activity:activity-compose:1.6.1"
+
     // Optional - Integration with ViewModels
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.5.1"
 
