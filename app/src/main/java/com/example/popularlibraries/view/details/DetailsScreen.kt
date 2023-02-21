@@ -41,19 +41,16 @@ import com.example.popularlibraries.model.entity.GitHubUserRepository
 
 @Composable
 fun DetailsScreen(viewModel: DetailsViewModel) {
-    val user by viewModel.user.collectAsState()
-    val error by viewModel.error.collectAsState()
-    val loading by viewModel.loading.collectAsState()
-
+    val detailsState by viewModel.detailsState.collectAsState()
     MaterialTheme {
         Scaffold { paddingValues ->
             when {
-                user != null -> DetailsScreenContent(
+                detailsState.user != null -> DetailsScreenContent(
                     paddingValues = paddingValues,
-                    user = user,
+                    user = detailsState.user,
                     onItemClicked = viewModel::onItemClicked
                 )
-                loading -> {
+                detailsState.loading -> {
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
@@ -64,10 +61,10 @@ fun DetailsScreen(viewModel: DetailsViewModel) {
                     }
                 }
             }
-            if (error.isNotEmpty()) {
+            if (detailsState.error.isNotEmpty()) {
                 Toast.makeText(
                     LocalContext.current.applicationContext,
-                    error,
+                    detailsState.error,
                     Toast.LENGTH_SHORT
                 ).show()
             }

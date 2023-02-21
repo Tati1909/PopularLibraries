@@ -13,6 +13,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 
 class DetailsViewModel @AssistedInject constructor(
     @Assisted private val userLogin: String,
@@ -22,9 +23,7 @@ class DetailsViewModel @AssistedInject constructor(
     router: Router
 ) : BaseViewModel(router) {
 
-    val user = MutableStateFlow<Pair<GitHubUserEntity, List<GitHubUserRepository>>?>(null)
-    val loading = MutableStateFlow(true)
-    val error = MutableStateFlow("")
+    val detailsState = MutableStateFlow(DetailsState())
 
     init {
         loadData()
@@ -39,10 +38,9 @@ class DetailsViewModel @AssistedInject constructor(
                 } else {
                     throw IllegalStateException("repositoriesUrl should not be null")
                 }
-            this@DetailsViewModel.user.value = user to repositories
-            loading.value = false
+            updateUiState(user = user to repositories, loading = false)
         }.catch { throwable ->
-            error.value = throwable.message ?: resourcesProvider.getString(R.string.error_view)
+            updateUiState(error = throwable.message ?: resourcesProvider.getString(R.string.error_view))
         }.start()
     }
 
@@ -58,6 +56,20 @@ class DetailsViewModel @AssistedInject constructor(
     fun backPressed(): Boolean {
         router.exit()
         return true
+    }
+
+    private fun updateUiState(
+        user: Pair<GitHubUserEntity, List<GitHubUserRepository>>? = null,
+        loading: Boolean? = null,
+        error: String? = null
+    ) {
+        detailsState.update { uiState ->
+            uiState.copy(
+                user = user ?: uiState.user,
+                loading = loading ?: uiState.loading,
+                error = error ?: uiState.error
+            )
+        }
     }
 
     @AssistedFactory
