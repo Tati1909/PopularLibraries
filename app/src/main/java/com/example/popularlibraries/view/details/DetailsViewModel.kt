@@ -5,7 +5,7 @@ import com.example.popularlibraries.base.BaseViewModel
 import com.example.popularlibraries.base.resourcesprovider.ResourcesProvider
 import com.example.popularlibraries.model.entity.GitHubUserEntity
 import com.example.popularlibraries.model.entity.GitHubUserEntity.Mapper.map
-import com.example.popularlibraries.model.entity.GitHubUserRepoEntity
+import com.example.popularlibraries.model.entity.GitHubUserRepository
 import com.example.popularlibraries.model.repository.GithubUsersRepository
 import com.example.popularlibraries.navigation.InfoStarter
 import com.github.terrakok.cicerone.Router
@@ -13,6 +13,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 
 class DetailsViewModel @AssistedInject constructor(
     @Assisted private val userLogin: String,
@@ -22,9 +23,7 @@ class DetailsViewModel @AssistedInject constructor(
     router: Router
 ) : BaseViewModel(router) {
 
-    val data = MutableStateFlow<Pair<GitHubUserEntity, List<GitHubUserRepoEntity>>?>(null)
-    val loading = MutableStateFlow(true)
-    val error = MutableStateFlow("")
+    val detailsState = MutableStateFlow(DetailsState())
 
     init {
         loadData()
@@ -33,21 +32,20 @@ class DetailsViewModel @AssistedInject constructor(
     private fun loadData() {
         tryLaunch {
             val user: GitHubUserEntity = map(gitHubRepository.getUserByLogin(userLogin))
-            val repositories: List<GitHubUserRepoEntity> =
+            val repositories: List<GitHubUserRepository> =
                 if (user.repositoriesUrl != null) {
-                    gitHubRepository.getUserRepositories(user.repositoriesUrl).map(GitHubUserRepoEntity.Mapper::map)
+                    gitHubRepository.getUserRepositories(user.repositoriesUrl).map(GitHubUserRepository.Mapper::map)
                 } else {
                     throw IllegalStateException("repositoriesUrl should not be null")
                 }
-            data.value = user to repositories
-            loading.value = false
+            updateUiState(user = user to repositories, loading = false)
         }.catch { throwable ->
-            error.value = throwable.message ?: resourcesProvider.getString(R.string.error_view)
+            updateUiState(error = throwable.message ?: resourcesProvider.getString(R.string.error_view))
         }.start()
     }
 
     /** При нажатии на репозиторий переходим на другой экран и передаем ссылку на выбранный репозиторий - repoUrl */
-    fun onItemClicked(gitHubUserRepoEntity: GitHubUserRepoEntity) {
+    fun onItemClicked(gitHubUserRepoEntity: GitHubUserRepository) {
         router.navigateTo(infoStarter.info(gitHubUserRepoEntity.repositoryUrl))
     }
 
@@ -58,6 +56,20 @@ class DetailsViewModel @AssistedInject constructor(
     fun backPressed(): Boolean {
         router.exit()
         return true
+    }
+
+    private fun updateUiState(
+        user: Pair<GitHubUserEntity, List<GitHubUserRepository>>? = null,
+        loading: Boolean? = null,
+        error: String? = null
+    ) {
+        detailsState.update { uiState ->
+            uiState.copy(
+                user = user ?: uiState.user,
+                loading = loading ?: uiState.loading,
+                error = error ?: uiState.error
+            )
+        }
     }
 
     @AssistedFactory

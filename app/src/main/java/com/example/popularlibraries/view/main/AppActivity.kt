@@ -72,6 +72,7 @@ class AppActivity : AppCompatActivity(), HasComponentDependencies {
         super.onPause()
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         supportFragmentManager.fragments.forEach {
             if (it is BackButtonListener && it.backPressed()) {
